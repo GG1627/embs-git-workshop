@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  background: #fff9ed;
+  background: #fff9ee;
   border-bottom: 1px solid var(--border);
 }
 .brand {
@@ -35,7 +35,7 @@
 }
 .repo-navigation {
   border-bottom: 1px solid var(--border);
-  background: #fff9ed;
+  background: #fff9ee;
 }
 .nav-inner {
   display: flex;
@@ -59,15 +59,15 @@
   height: 54px;
   padding: 0 16px;
   font-size: 14px;
-  color: #514f65;
+  color: #526675;
 }
 .nav-inner [role="tab"][aria-selected="true"] {
-  border-bottom-color: #8f6a9b;
+  border-bottom-color: #6e8ba0;
   font-weight: 600;
   color: var(--text);
 }
 .nav-inner [role="tab"]:hover {
-  background: #f2edf3;
+  background: #edf3f6;
 }
 .main-content {
   width: min(1100px, calc(100% - 64px));
@@ -83,15 +83,15 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 6px 13px;
-  background: #d9d2df;
+  background: #d5dfdf;
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
   white-space: nowrap;
 }
 .button:hover:not(:disabled) {
-  background: #eee6ed;
-  border-color: #746b82;
+  background: #e8efef;
+  border-color: #607685;
 }
 .button:disabled {
   opacity: 0.45;
@@ -129,7 +129,7 @@
   background: none;
 }
 .icon-button:hover {
-  background: #d8d1df;
+  background: #ccd8dd;
 }
 .lesson-toolbar {
   display: flex;
@@ -178,7 +178,7 @@
 .slide-copy p {
   font-size: 19px;
   line-height: 1.55;
-  color: #5d5b70;
+  color: #5b6e7b;
   margin-bottom: 0;
 }
 .slide-canvas .practice-link {
@@ -332,7 +332,7 @@ footer span {
 .long-arrow {
   height: 1px;
   width: 140px;
-  background: #746b82;
+  background: #607685;
   position: relative;
   display: block;
   flex-shrink: 1;
@@ -345,8 +345,8 @@ footer span {
   top: -4px;
   width: 8px;
   height: 8px;
-  border-top: 1px solid #746b82;
-  border-right: 1px solid #746b82;
+  border-top: 1px solid #607685;
+  border-right: 1px solid #607685;
   transform: rotate(45deg);
 }
 .snapshot-result {
@@ -357,7 +357,7 @@ footer span {
 .commit-dot {
   width: 16px;
   height: 16px;
-  background: #8d78ab;
+  background: #7898ad;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
@@ -369,7 +369,7 @@ footer span {
   font-size: 12px;
 }
 .stage-box {
-  border: 1px dashed #81708e;
+  border: 1px dashed #68818f;
   padding: 24px;
   display: flex;
   gap: 10px;
@@ -400,7 +400,7 @@ footer span {
   left: calc(50% + 8px);
   width: calc(100% - 16px);
   height: 1px;
-  background: #81708e;
+  background: #68818f;
 }
 .branch-diagram {
   width: min(550px, 90%);
@@ -412,18 +412,18 @@ footer span {
   overflow: visible;
 }
 .branch-diagram path {
-  stroke: #746b82;
+  stroke: #607685;
   stroke-width: 2;
   fill: none;
 }
 .branch-diagram circle {
   fill: var(--bg);
-  stroke: #746b82;
+  stroke: #607685;
   stroke-width: 2;
 }
 .branch-diagram .feature-line,
 .branch-diagram .feature-node {
-  stroke: #a391c6;
+  stroke: #b19a7c;
 }
 .branch-labels {
   display: flex;
@@ -509,7 +509,7 @@ footer span {
 }
 .question-mark {
   font-size: 70px;
-  color: #81708e;
+  color: #68818f;
   font-weight: 300;
   line-height: 1;
 }
@@ -556,7 +556,7 @@ footer span {
 .practice-heading p {
   font-size: 16px;
   line-height: 1.7;
-  color: #514f65;
+  color: #526675;
   margin-bottom: 0;
 }
 .terminal-panel,
@@ -591,7 +591,7 @@ footer span {
 }
 .terminal-welcome {
   margin-bottom: 6px;
-  color: #514f65;
+  color: #526675;
 }
 .terminal-entry {
   margin-bottom: 15px;
@@ -599,7 +599,7 @@ footer span {
 .terminal-entry pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  color: #514f65;
+  color: #526675;
   line-height: 1.65;
   margin-top: 3px;
   font-size: 13px;
@@ -633,7 +633,7 @@ footer span {
 }
 .terminal-input input:focus-visible {
   outline: 0;
-  box-shadow: 0 1px 0 #f8d69b;
+  box-shadow: 0 1px 0 #d9bc96;
 }
 .prompt-user {
   color: #436d60;
@@ -661,7 +661,7 @@ footer span {
   padding: 16px 20px;
   margin-top: 18px;
   font-size: 14px;
-  background: #f2edf3;
+  background: #edf3f6;
 }
 .hint-box strong {
   font-size: 13px;
@@ -669,7 +669,7 @@ footer span {
 .hint-box p {
   margin: 8px 0 6px;
   line-height: 1.6;
-  color: #514f65;
+  color: #526675;
 }
 .hint-box .link-button {
   font-size: 12px;
@@ -696,7 +696,7 @@ footer span {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  border-top: 1px solid #d9d2df;
+  border-top: 1px solid #d5dfdf;
   margin-top: 26px;
   padding-top: 18px;
   color: var(--muted);
@@ -734,7 +734,7 @@ footer span {
 .file-view-switch button[aria-pressed="true"] {
   color: var(--text);
   border-color: var(--border);
-  background: #d9d2df;
+  background: #d5dfdf;
 }
 .files-panel textarea {
   display: block;
@@ -792,7 +792,7 @@ footer span {
   align-items: center;
   gap: 16px;
   padding: 15px 18px;
-  border-bottom: 1px solid #d9d2df;
+  border-bottom: 1px solid #d5dfdf;
   font-size: 14px;
 }
 .commit-row code {
@@ -803,7 +803,7 @@ footer span {
   height: 10px;
   width: 10px;
   border-radius: 50%;
-  border: 1px solid #746b82;
+  border: 1px solid #607685;
   flex-shrink: 0;
 }
 .history-panel > p {
@@ -889,11 +889,11 @@ footer span {
   font-size: 13px;
 }
 .pr-tabs button[aria-pressed="true"] {
-  border-bottom-color: #8f6a9b;
+  border-bottom-color: #6e8ba0;
 }
 .pr-tabs button span {
   border-radius: 10px;
-  background: #d8d1df;
+  background: #ccd8dd;
   padding: 2px 6px;
   font-size: 11px;
   margin-left: 4px;
@@ -913,7 +913,7 @@ footer span {
 .review-comment p {
   margin: 10px 0 0;
   line-height: 1.6;
-  color: #514f65;
+  color: #526675;
 }
 .merge-area {
   display: flex;
@@ -939,7 +939,7 @@ footer span {
 .simulation-note {
   font-size: 12px;
   color: var(--muted);
-  border-top: 1px solid #d9d2df;
+  border-top: 1px solid #d5dfdf;
   padding: 12px 20px;
 }
 .picker-dialog {
@@ -953,7 +953,7 @@ footer span {
   box-shadow: 0 8px 40px #0009;
 }
 .picker-dialog::backdrop {
-  background: #20294399;
+  background: #213b5099;
 }
 .dialog-header {
   padding: 16px 20px;
@@ -978,7 +978,7 @@ footer span {
   margin: 14px 20px;
   font-size: 14px;
   line-height: 1.7;
-  color: #514f65;
+  color: #526675;
 }
 .picker-row {
   display: flex;
@@ -1018,7 +1018,7 @@ footer span {
 }
 .reference-list > div {
   padding: 13px 0;
-  border-bottom: 1px solid #d9d2df;
+  border-bottom: 1px solid #d5dfdf;
 }
 .reference-list code {
   font-size: 13px;
@@ -1034,7 +1034,7 @@ footer span {
   padding: 20px;
   font-size: 13px;
   line-height: 1.7;
-  color: #514f65;
+  color: #526675;
 }
 .simulator-about h3 {
   color: var(--text);
