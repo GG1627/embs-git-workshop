@@ -1,14 +1,14 @@
 # Git Multiverse: implemented direction
 
-The [Git Multiverse brief](GIT_MULTIVERSE_BRIEF.md) is the current product specification. Its redesign is implemented across the existing React app. The earlier GitHub direction below is retained as historical context.
+The [Git Multiverse brief](GIT_MULTIVERSE_BRIEF.md) defines the product scope; the October 11 visual revision below supersedes its pixel-art treatment. Its redesign is implemented across the existing React app. The earlier GitHub direction below is retained as historical context.
 
 ## Visual system
 
-- Original generated floating-island scenery, informed by the supplied [Altura reference](references/altura-pixel-landscape.png). Dusk blue, lavender shadows, peach clouds, gold light, and warm ivory.
+- Original generated floating-island scenery, informed by the supplied [Altura reference](references/altura-pixel-landscape.png). The October 11 revision replaces pixel texture with restrained gouache/watercolor shapes, light blue skies, slate blue shadows, sandy tan islands, muted peach clouds, and warm ivory.
 - Georgia display headings, system sans explanations and controls, system monospace commands. No network font dependency.
-- Tokens: ink `#202943`, dusk `#405A83`, lavender `#A394C2`, peach `#F4B58F`, gold `#F8D69B`, reading surface `#FFFAF1`.
-- The [concept board](concepts/git-multiverse.png) covers the opening, staging lesson, and practice. The [production landscape](../src/assets/multiverse-landscape.png) is reused as the opening scenery and a quiet chapter-edge treatment. UI, commands, and graphs remain live code.
-- Slow transform-only sky drift and checkpoint glow provide atmosphere. Short state arrivals explain staging and inspection. All motion has equivalent static results and respects reduced motion.
+- Tokens: ink `#213B50`, blue `#416885`, sky `#C6DCEA`, tan `#C5AA8B`, peach `#EDBEA8`, reading surface `#FFF9EE`.
+- The [concept board](concepts/git-multiverse.png) covers the opening, staging lesson, and practice. The [revised production landscape](../src/assets/multiverse-painted-landscape.png) is reused as the opening scenery and a quiet chapter-edge treatment. UI, commands, and graphs remain live code.
+- Slow transform-only sky drift provides atmosphere. The opening history route uses flat blue marks without glow. Short state arrivals explain staging and inspection. All motion has equivalent static results and respects reduced motion.
 
 ## Learning and interaction
 
@@ -27,6 +27,8 @@ Present appears only in Slides. A separate 1200 by 675 slide canvas scales to av
 The reference is an art direction, not an image of a finished UI. The implementation preserves the existing two-row workshop navigation and full 35-slide deck. Lessons center one idea above the diagram, and practice puts the current goal above its tool. This reads better at classroom and mobile sizes than the compressed concept board. Supplied EMBS branding replaces generated lettering. The index correctly includes unchanged tracked files (the concept board abbreviated it to the selected change). Present is restricted to Slides even though the generated board placed it in practice. The landscape has no invented ruins or elaborate game story. Opening copy is limited to the agreed headline, the concise learning invitation, Begin the journey, and Resume practice when saved work exists.
 
 ## Verification coverage
+
+The October 11 painted revision passed desktop Chromium review of the opening, staging interaction, practice history, native fullscreen, fallback, Escape, and focus restoration, plus tests, lint, and build. Mobile was deliberately not rechecked at the user?s request.
 
 The implementation was checked with Playwright Chromium after the browser connector reported no available browser. Coverage includes all 12 exercise completions; sandbox reset isolation; actual staging snapshots and uncommitted notes; inactive branch inspection; conflict editing; both diff comparisons; saved progress and direct links; hints, reference, and resume; native fullscreen, native exit, Escape, focus restoration, rejection and unsupported-API fallbacks; all 35 slides at 4:3 projection and mobile width; and reduced motion. Repository and lesson-sequence tests run with `npm run test`.
 

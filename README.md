@@ -2,7 +2,7 @@
 
 A browser-only introduction to Git for the University of Florida Engineering in Medicine & Biology Society. Attendees need no downloads, editor, or account.
 
-A calm, pixel-painted world of floating islands connects the workshop. Lessons use warm ivory reading surfaces, interactive repository examples, and real Git terminology. The artwork is decorative; every practice checkpoint and branch comes from the simulator.
+A calm, hand-painted world of floating islands connects the workshop. Lessons use warm ivory reading surfaces, interactive repository examples, and real Git terminology. The artwork is decorative; every practice checkpoint and branch comes from the simulator.
 
 ## Run locally
 
@@ -51,7 +51,7 @@ This is a teaching simulation, not a full shell or Git implementation. It never 
 - `src/components/`: terminal, file editor, slide diagrams, pull request, dialogs, and icons.
 - `src/App.tsx`: navigation, exercise progression, persistence, and direct links.
 - `src/App.css`, `src/index.css`, and `src/Multiverse.css`: shared components, visual tokens, responsive scenery, and projection styles.
-- `src/assets/multiverse-landscape.png`: generated reusable island landscape; all text and state diagrams remain live HTML/SVG.
+- `src/assets/multiverse-painted-landscape.png`: generated reusable island landscape; all text and state diagrams remain live HTML/SVG.
 - `design/DIRECTION.md`: current design specification and concept references.
 - `design/multiverse-image-prompts.json`: artwork and concept prompts, using the supplied Altura reference.
 
