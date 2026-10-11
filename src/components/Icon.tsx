@@ -8,6 +8,7 @@ type Name =
   | "check"
   | "branch"
   | "copy"
+  | "expand"
   | "reset";
 const paths: Record<Name, string> = {
   file: "M9 2H4v16h12V9L9 2Zm0 0v7h7M7 12h6M7 15h6",
@@ -20,6 +21,7 @@ const paths: Record<Name, string> = {
   branch:
     "M6 6v8m8-8v2c0 4-8 2-8 6M6 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8-12a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z",
   copy: "M7 7h10v11H7V7ZM3 13V2h10v2",
+  expand: "M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4",
   reset: "M3 9a7 7 0 1 1 1 6M3 3v6h6",
 };
 export default function Icon({

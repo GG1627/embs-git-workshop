@@ -264,7 +264,7 @@ export const exercises: Exercise[] = [
       ),
       step(
         "Change the sensor setting.",
-        "Open View files and change sampleRate from 50 to 100.",
+        "Open Files and change sampleRate from 50 to 100.",
         [
           "The file editor saves your working edit automatically.",
           "Change the number, preserving the JSON punctuation.",
@@ -290,7 +290,7 @@ export const exercises: Exercise[] = [
         [
           "The feature commit is safely stored on its branch.",
           "Use git switch main.",
-          "Type git switch main, then open View files if you want to compare.",
+          "Type git switch main, then open Files if you want to compare.",
         ],
         (c) => c.repo.branch === "main" && sensorCommitted(c.repo, 50),
       ),
@@ -357,7 +357,7 @@ export const exercises: Exercise[] = [
       ),
       step(
         "Choose the final setting.",
-        "Open View files. Keep valid JSON with sampleRate 100 and remove all conflict markers.",
+        "Open Files. Keep valid JSON with sampleRate 100 and remove all conflict markers.",
         [
           "The HEAD section is your current branch; the lower section is incoming.",
           "Keep one JSON object and remove <<<<<<<, =======, and >>>>>>> lines.",
@@ -493,7 +493,7 @@ export const exercises: Exercise[] = [
       ),
       step(
         "Add your sensor improvement.",
-        "Open View files and change sampleRate to 100.",
+        "Open Files and change sampleRate to 100.",
         [
           "Keep your teammate’s README change.",
           "Edit only sensor-config.json.",
@@ -656,7 +656,7 @@ export const exercises: Exercise[] = [
         "Edit files or run commands. Type help for the supported command list.",
         [
           "Start with git status.",
-          "Open View files to make a change.",
+          "Open Files to make a change.",
           'Try an edit, git add, and git commit -m "My experiment".',
         ],
         () => false,

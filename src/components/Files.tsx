@@ -13,10 +13,14 @@ export default function Files({
 }) {
   const [selected, setSelected] = useState(preferred ?? "sensor-config.json");
   const [view, setView] = useState<"edit" | "diff">("edit");
+  const [comparison, setComparison] = useState<"working" | "staged">("working");
   const files = Object.keys(repo.files),
     file = files.includes(selected) ? selected : files[0];
   const modified = unstaged(repo),
     ready = staged(repo);
+  const before = comparison === "working" ? repo.index : head(repo)?.tree ?? {};
+  const after = comparison === "working" ? repo.files : repo.index;
+  const untracked = comparison === "working" && !(file in repo.index);
   return (
     <section className="files-panel" aria-label="Project files">
       <div className="panel-header">
@@ -55,8 +59,10 @@ export default function Files({
           spellCheck={false}
         />
       ) : (
+        <div>
+        <label className="file-diff-label">Compare <select aria-label="Diff comparison" value={comparison} onChange={(event) => setComparison(event.target.value as "working" | "staged")}><option value="working">Index → working file (git diff)</option><option value="staged">HEAD → index (git diff --staged)</option></select></label>
         <pre className="file-diff">
-          {diffTrees(head(repo)?.tree ?? {}, repo.files)
+          {(untracked ? "This file is untracked. git diff does not include it until it is staged." : diffTrees(file in before ? { [file]: before[file] } : {}, file in after ? { [file]: after[file] } : {}))
             .split("\n")
             .map((line, i) => (
               <span
@@ -74,6 +80,7 @@ export default function Files({
               </span>
             ))}
         </pre>
+        </div>
       )}
       <div className="file-status">
         <span>

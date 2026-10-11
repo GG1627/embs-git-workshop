@@ -1,0 +1,50 @@
+- generic [ref=e3]:
+  - link "Skip to content" [ref=e4] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - img "UF EMBS" [ref=e7]
+      - generic [ref=e8]:
+        - text: UF EMBS /
+        - strong [ref=e9]: git-workshop
+  - navigation "Workshop" [ref=e11]:
+    - generic [ref=e12]:
+      - tablist "Workshop views" [ref=e13]:
+        - tab "Slides" [ref=e14] [cursor=pointer]
+        - tab "Practice" [active] [selected] [ref=e17] [cursor=pointer]
+      - button "Reference" [ref=e20] [cursor=pointer]
+  - tabpanel "Practice" [ref=e48]:
+    - generic [ref=e22]:
+      - generic [ref=e49]:
+        - generic [ref=e50]: Practice 03
+        - text: / Your first commit
+      - button "Exercises" [ref=e51] [cursor=pointer]
+    - generic [ref=e52]:
+      - generic [ref=e53]:
+        - heading "See what changed." [level=1] [ref=e106]
+        - generic [ref=e55]: Step 1 of 3
+      - paragraph [ref=e56]: Run git status to check the files in your project.
+    - region "Git practice terminal" [ref=e107]:
+      - generic [ref=e108]:
+        - generic [ref=e109]: Terminal
+        - button "Reset" [ref=e110] [cursor=pointer]
+      - generic [ref=e111]:
+        - paragraph [ref=e112]: You’re in embs-pulse. Let’s look around.
+        - log "Command history"
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - text: embs@workshop:~/embs-pulse $
+            - generic [ref=e115]: Command
+          - textbox "Terminal command" [ref=e116]:
+            - /placeholder: Type a command…
+          - button "Run command" [ref=e117] [cursor=pointer]
+    - generic [ref=e118]:
+      - button "Need a hint?" [ref=e119] [cursor=pointer]
+      - button "View files" [ref=e121] [cursor=pointer]
+    - generic [ref=e72]:
+      - text: Practice runs in your browser.
+      - button "About the simulator" [ref=e73] [cursor=pointer]
+    - generic [ref=e45]:
+      - button "Previous exercise" [ref=e74] [cursor=pointer]
+      - button "Next exercise" [disabled] [ref=e77]
+  - contentinfo [ref=e47]: University of Florida · Engineering in Medicine & Biology Society
