@@ -40,7 +40,7 @@ export const slides: Slide[] = [
   {
     chapter: 0,
     title: "Your project. With a memory.",
-    body: "An introduction to Git, together.",
+    body: "Learn Git, one checkpoint at a time.",
     visual: "welcome",
     notes:
       "Welcome UF EMBS members. Explain that no installation or account is required. Ask who has seen a filename ending in final_final.",

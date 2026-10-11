@@ -2,14 +2,16 @@ import gitLogo from "../assets/git.png";
 import githubLogo from "../assets/github.png";
 import type { Slide } from "../data/lessons";
 import Icon from "./Icon";
+import LessonDemo from "./LessonDemo";
 export default function SlideVisual({ slide }: { slide: Slide }) {
+  if (["staging", "snapshot", "branch", "merge", "conflict", "remote"].includes(slide.visual)) return <LessonDemo kind={slide.visual as "staging" | "snapshot" | "branch" | "merge" | "conflict" | "remote"} />;
+  if (slide.code === "git revert HEAD") return <LessonDemo kind="revert" />;
   switch (slide.visual) {
     case "welcome":
       return (
-        <div className="welcome-visual">
-          <img src={gitLogo} alt="Git" />
-          <span className="visual-divider" />
-          <img className="github-logo" src={githubLogo} alt="GitHub" />
+        <div className="welcome-visual" aria-label="Illustration: a project grows through saved checkpoints">
+          <svg viewBox="0 0 600 170" aria-hidden="true"><path d="M25 122C115 122 105 90 195 90S320 122 370 70S470 48 560 35" />{[[25,122],[195,90],[370,70],[560,35]].map(([x,y]) => <g key={x}><circle className="journey-halo" cx={x} cy={y} r="15" /><circle cx={x} cy={y} r="5" /></g>)}</svg>
+          <div className="journey-labels"><span>Explore</span><span>Stage</span><span>Commit</span></div>
         </div>
       );
     case "tools":
@@ -51,34 +53,6 @@ export default function SlideVisual({ slide }: { slide: Slide }) {
           <code>{slide.code}</code>
         </div>
       );
-    case "snapshot":
-      return (
-        <div className="snapshot-diagram">
-          <div className="diagram-file">
-            <Icon name="file" size={65} />
-            <code>sensor-config.json</code>
-          </div>
-          <span className="long-arrow" aria-hidden="true" />
-          <div className="snapshot-result">
-            <span className="commit-dot" />
-            <code>Update sensor settings</code>
-          </div>
-        </div>
-      );
-    case "staging":
-      return (
-        <div className="staging-diagram">
-          <div className="diagram-file">
-            <Icon name="file" size={48} />
-            <code>sensor-config.json</code>
-          </div>
-          <span className="long-arrow" aria-hidden="true" />
-          <div className="stage-box">
-            <Icon name="check" />
-            <span>Ready for the next commit</span>
-          </div>
-        </div>
-      );
     case "history":
       return (
         <div className="history-diagram">
@@ -97,53 +71,6 @@ export default function SlideVisual({ slide }: { slide: Slide }) {
           ))}
         </div>
       );
-    case "branch":
-    case "merge":
-      return (
-        <div className="branch-diagram">
-          <svg
-            viewBox="0 0 540 150"
-            role="img"
-            aria-label={
-              slide.visual === "merge"
-                ? "Main and feature histories join in a merge commit"
-                : "Feature history branches from main"
-            }
-          >
-            <path d="M40 45H500" />
-            <path
-              className="feature-line"
-              d={
-                slide.visual === "merge"
-                  ? "M140 45C180 45 170 115 220 115H330C380 115 370 45 410 45"
-                  : "M140 45C180 45 170 115 220 115H410"
-              }
-            />
-            {[40, 140, 280, 410, 500].map((x) => (
-              <circle key={x} cx={x} cy="45" r="8" />
-            ))}
-            {[220, 330].map((x) => (
-              <circle className="feature-node" key={x} cx={x} cy="115" r="8" />
-            ))}
-          </svg>
-          <div className="branch-labels">
-            <code>main</code>
-            <code>feature/sensor</code>
-          </div>
-        </div>
-      );
-    case "conflict":
-      return (
-        <div className="conflict-example">
-          <code>
-            <span>{"<<<<<<< HEAD"}</span>
-            {'\n  "sampleRate": 75\n'}
-            <span>{"======="}</span>
-            {'\n  "sampleRate": 100\n'}
-            <span>{">>>>>>> feature/sensor"}</span>
-          </code>
-        </div>
-      );
     case "pr":
       return (
         <div className="pr-diagram">
@@ -157,20 +84,6 @@ export default function SlideVisual({ slide }: { slide: Slide }) {
             </span>
           </div>
           <span className="pr-open">Open</span>
-        </div>
-      );
-    case "remote":
-      return (
-        <div className="remote-diagram">
-          <div>
-            <Icon name="terminal" size={42} />
-            <span>Your local project</span>
-          </div>
-          <span className="long-arrow" aria-hidden="true" />
-          <div>
-            <Icon name="book" size={42} />
-            <span>The shared remote</span>
-          </div>
         </div>
       );
     case "files":

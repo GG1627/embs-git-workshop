@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import embsLogo from "./assets/embs_logo.png";
 import { chapters, slides } from "./data/lessons";
 import { exercises, reference } from "./data/exercises";
 import type { Exercise } from "./data/exercises";
-import { execute, history } from "./lib/git";
+import { execute } from "./lib/git";
 import type { Repo } from "./lib/git";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import Icon from "./components/Icon";
@@ -13,7 +13,11 @@ import type { Entry } from "./components/Terminal";
 import Files from "./components/Files";
 import PullRequest from "./components/PullRequest";
 import Picker from "./components/Picker";
+import RepositoryGraph from "./components/RepositoryGraph";
+import RepositoryCompanion from "./components/RepositoryCompanion";
+import Presentation from "./components/Presentation";
 import "./App.css";
+import "./Multiverse.css";
 
 type Session = {
   repo: Repo;
@@ -112,6 +116,8 @@ export default function App() {
     "lessons" | "exercises" | "reference" | null
   >(null);
   const [notes, setNotes] = useState(false);
+  const [presenting, setPresenting] = useState(false);
+  const presentTrigger = useRef<HTMLButtonElement>(null);
   const [hint, setHint] = useState(0),
     [view, setView] = useState<"terminal" | "files" | "history">("terminal");
   const [resetting, setResetting] = useState(false),
@@ -147,6 +153,7 @@ export default function App() {
       setPicker(null);
       setHint(0);
       setView("terminal");
+      setPresenting(false);
     };
     window.addEventListener("hashchange", navigate);
     return () => window.removeEventListener("hashchange", navigate);
@@ -169,6 +176,9 @@ export default function App() {
       if (
         saved.tab !== "slides" ||
         picker ||
+        e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey ||
+        (e.target as HTMLElement).isContentEditable ||
+        (e.target as HTMLElement).closest("dialog, summary, [role='tablist']") ||
         ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(
           (e.target as HTMLElement).tagName,
         )
@@ -249,7 +259,8 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <>
+    <div className={`app ${saved.tab === "slides" && saved.slide === 0 ? "opening" : ""}`} inert={presenting}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -258,7 +269,7 @@ export default function App() {
           <img src={embsLogo} alt="UF EMBS" />
           <span>
             UF EMBS <span className="repo-slash">/</span>{" "}
-            <strong>git-workshop</strong>
+            <strong>Git Multiverse</strong>
           </span>
         </div>
         <span className="header-note">Git workshop</span>
@@ -323,6 +334,7 @@ export default function App() {
                   <span className="optional-label">Optional</span>
                 ) : null}
               </div>
+              <button ref={presentTrigger} className="button present-button" onClick={() => setPresenting(true)}><Icon name="expand" />Present</button>
             </div>
             <section
               className={`slide-canvas visual-${slide.visual}`}
@@ -332,7 +344,8 @@ export default function App() {
                 <h1>{slide.title}</h1>
                 <p>{slide.body}</p>
               </div>
-              <SlideVisual slide={slide} />
+              <SlideVisual key={saved.slide} slide={slide} />
+              {saved.slide === 0 ? <div className="journey-actions"><button className="button primary" onClick={() => setSaved((s) => ({ ...s, slide: 1 }))}>Begin the journey <Icon name="right" /></button>{Object.keys(saved.sessions).length > 0 ? <button className="button resume-button" onClick={() => selectExercise(saved.exercise)}>Resume practice</button> : null}</div> : null}
               {slide.exercise ? (
                 <button
                   className="button practice-link"
@@ -454,7 +467,12 @@ export default function App() {
                   </div>
                   <p>{currentStep.instruction}</p>
                 </div>
-                {exercise.kind === "pr" ? (
+                <div className={`practice-workspace ${view === "history" ? "history-workspace" : ""}`}>
+                <div className="active-tool">
+                <div className="tool-selector" aria-label="Practice tools">
+                  {(["terminal", "files", "history"] as const).map((tool) => <button key={tool} aria-pressed={view === tool} onClick={() => setView(tool)}><Icon name={tool === "terminal" ? "terminal" : tool === "files" ? "file" : "branch"} />{tool === "terminal" ? "Terminal" : tool === "files" ? "Files" : "History"}</button>)}
+                </div>
+                {exercise.kind === "pr" && view === "terminal" ? (
                   <PullRequest
                     repo={session.repo}
                     reviewed={session.reviewed}
@@ -497,28 +515,7 @@ export default function App() {
                         }
                       />
                     ) : (
-                      <section className="history-panel">
-                        <div className="panel-header">
-                          <span>Commit history</span>
-                          <span>
-                            <Icon name="branch" size={14} />{" "}
-                            {session.repo.branch}
-                          </span>
-                        </div>
-                        {history(session.repo).map((c) => (
-                          <div className="commit-row" key={c.id}>
-                            <span className="small-commit-dot" />
-                            <code>{c.id}</code>
-                            <span>{c.message}</span>
-                            {c.parents.length === 2 ? (
-                              <span className="muted">merge</span>
-                            ) : null}
-                          </div>
-                        ))}
-                        {!history(session.repo).length ? (
-                          <p>No commits yet.</p>
-                        ) : null}
-                      </section>
+                      <RepositoryGraph key={exercise.id} repo={session.repo} />
                     )}
                     <div className="practice-utilities">
                       <button
@@ -530,37 +527,6 @@ export default function App() {
                           ? "Another hint?"
                           : "Need a hint?"}
                       </button>
-                      <div>
-                        {view !== "terminal" ? (
-                          <button
-                            className="link-button"
-                            onClick={() => setView("terminal")}
-                          >
-                            Back to terminal
-                          </button>
-                        ) : (
-                          <button
-                            className="link-button"
-                            onClick={() => setView("files")}
-                          >
-                            View files
-                          </button>
-                        )}
-                        {exercise.chapter >= 3 ? (
-                          <button
-                            className="link-button"
-                            onClick={() =>
-                              setView(
-                                view === "history" ? "terminal" : "history",
-                              )
-                            }
-                          >
-                            {view === "history"
-                              ? "Hide history"
-                              : "View history"}
-                          </button>
-                        ) : null}
-                      </div>
                     </div>
                   </>
                 )}
@@ -589,6 +555,9 @@ export default function App() {
                     </button>
                   </div>
                 ) : null}
+                </div>
+                <RepositoryCompanion key={exercise.id} repo={session.repo} exercise={exercise.id} onHistory={() => setView("history")} />
+                </div>
               </>
             )}
             <div className="practice-note">
@@ -776,5 +745,7 @@ export default function App() {
         </Picker>
       ) : null}
     </div>
+    {presenting && saved.tab === "slides" ? <Presentation trigger={presentTrigger} slide={slide} index={saved.slide} count={slides.length} onNavigate={(delta) => setSaved((s) => ({ ...s, slide: Math.max(0, Math.min(slides.length - 1, s.slide + delta)) }))} onExit={() => setPresenting(false)} /> : null}
+    </>
   );
 }

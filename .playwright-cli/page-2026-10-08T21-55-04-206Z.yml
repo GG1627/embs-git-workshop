@@ -1,0 +1,57 @@
+- generic [ref=e3]:
+  - link "Skip to content" [ref=e4] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - img "UF EMBS" [ref=e7]
+      - generic [ref=e8]:
+        - text: UF EMBS /
+        - strong [ref=e9]: git-workshop
+    - generic [ref=e10]: Git workshop
+  - navigation "Workshop" [ref=e11]:
+    - generic [ref=e12]:
+      - tablist "Workshop views" [ref=e13]:
+        - tab "Slides" [ref=e14] [cursor=pointer]
+        - tab "Practice" [active] [selected] [ref=e17] [cursor=pointer]
+      - button "Reference" [ref=e20] [cursor=pointer]
+  - tabpanel "Practice" [ref=e48]:
+    - generic [ref=e22]:
+      - generic [ref=e49]:
+        - generic [ref=e50]: Practice 07
+        - text: / Review a pull request
+      - button "Exercises" [ref=e51] [cursor=pointer]
+    - generic [ref=e52]:
+      - generic [ref=e53]:
+        - heading "Read the proposed change." [level=1] [ref=e80]
+        - generic [ref=e55]: Step 1 of 2
+      - paragraph [ref=e56]: Open Files changed and review the new README line.
+    - generic [ref=e81]:
+      - generic [ref=e82]:
+        - 'heading "Document the next experiment #1" [level=2] [ref=e83]'
+        - generic [ref=e84]:
+          - generic [ref=e85]: Open
+          - generic [ref=e88]:
+            - text: Maya wants to merge
+            - code [ref=e89]: feature/docs
+            - text: into
+            - code [ref=e90]: main
+      - generic [ref=e91]:
+        - button "Conversation" [pressed] [ref=e92] [cursor=pointer]
+        - button "Files changed 1" [ref=e93] [cursor=pointer]
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - strong [ref=e96]: Maya
+          - paragraph [ref=e97]: I added a note for our next experiment. Could you check the README before we merge?
+        - generic [ref=e98]:
+          - generic [ref=e101]:
+            - strong [ref=e102]: Review the files before merging
+            - paragraph [ref=e103]: There are no conflicts with the base branch.
+          - button "Merge pull request" [disabled] [ref=e104]
+      - generic [ref=e105]: Simulated pull request · No GitHub account required
+    - generic [ref=e72]:
+      - text: Practice runs in your browser.
+      - button "About the simulator" [ref=e73] [cursor=pointer]
+    - generic [ref=e45]:
+      - button "Previous exercise" [ref=e74] [cursor=pointer]
+      - button "Next exercise" [disabled] [ref=e77]
+  - contentinfo [ref=e47]: University of Florida · Engineering in Medicine & Biology Society

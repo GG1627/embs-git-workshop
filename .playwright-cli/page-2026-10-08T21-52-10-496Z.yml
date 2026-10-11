@@ -1,0 +1,33 @@
+- generic [ref=e3]:
+  - link "Skip to content" [ref=e4] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - img "UF EMBS" [ref=e7]
+      - generic [ref=e8]:
+        - text: UF EMBS /
+        - strong [ref=e9]: git-workshop
+    - generic [ref=e10]: Git workshop
+  - navigation "Workshop" [ref=e11]:
+    - generic [ref=e12]:
+      - tablist "Workshop views" [ref=e13]:
+        - tab "Slides" [selected] [ref=e14] [cursor=pointer]
+        - tab "Practice" [ref=e17] [cursor=pointer]
+      - button "Reference" [ref=e20] [cursor=pointer]
+  - tabpanel "Slides" [ref=e21]:
+    - generic [ref=e23]:
+      - button "Lessons" [ref=e24] [cursor=pointer]
+      - generic [ref=e28]: 01 / Start here
+    - region "Slide 1" [ref=e29]:
+      - generic [ref=e30]:
+        - heading "Your project. With a memory." [level=1] [ref=e31]
+        - paragraph [ref=e32]: An introduction to Git, together.
+      - generic [ref=e33]:
+        - img "Git" [ref=e34]
+        - img "GitHub" [ref=e36]
+    - generic [ref=e37]:
+      - button "Previous" [disabled] [ref=e38]
+      - generic [ref=e41]: 01 / 35
+      - button "Next" [ref=e42] [cursor=pointer]
+    - button "Show presenter notes" [ref=e46] [cursor=pointer]
+  - contentinfo [ref=e47]: University of Florida · Engineering in Medicine & Biology Society
