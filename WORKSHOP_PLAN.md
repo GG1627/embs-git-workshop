@@ -1,6 +1,6 @@
 # UF EMBS Git Workshop
 
-Original planning brief, October 8, 2026. The application is now implemented. The visual direction and multi-panel practice layout below were superseded by the user's feedback: use a restrained GitHub-style interface and introduce one task at a time. See `design/DIRECTION.md` for the current specification.
+Historical planning brief, October 8, 2026. The workshop has since been redesigned around real Git and a GitHub profile README. The curriculum and layout below are superseded by `design/PROFILE_README_IMPLEMENTATION_PLAN.md`; see `design/DIRECTION.md` and `docs/FACILITATOR.md` for the current implementation and run sheet.
 
 ## Agreed direction
 

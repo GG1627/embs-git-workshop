@@ -1,3 +1,72 @@
+# Current direction: story-based lesson, then profile README practice
+
+This section supersedes all historical directions below. The user selected **Workshop handbook**: warm white, charcoal text, restrained EMBS blue/purple accents, bold system typography, light teaching diagrams, and dark command blocks. No AI-generated imagery is used in the running application.
+
+The application now separates a standalone Git/GitHub lesson from the personal profile activity. The 24-slide sequence opens with the introduction and event check-in, sets up the class group-project scenario in three sentences on slide 3, explains Git, GitHub and repositories using that context, introduces the Big 3 (add, commit, push), then explicitly hands off to the separate seven-checkpoint guide. Check-in remains slide 2 with the supplied QR image and case-sensitive event code LATAAE6Q. Setup and reference support both views. There is no simulated terminal, repository editor, pull request, or activity engine in the active source.
+
+The teaching story follows you (Gael), Maya, and Jordan preparing a class group presentation. Gael handles the notes, Maya handles the checklist, and Jordan handles the outline. The opening scenario uses plain language before any Git terms. In the shared class-project repository, you change project-notes.md from Room 101 to Room 202, inspect and commit the update, then push it so Jordan and Maya can see it. Maya later publishes a checklist.md update about the presentation adapter; pull brings that saved work into a clean local copy. Core commands are introduced through their purpose in this story, with an explicit situation, goal, command, and result alongside an HTML/CSS/SVG visual. Titles name the concept or action directly. The overview distinguishes saving a file, committing locally, and pushing to GitHub. The local computer stays on the left and GitHub on the right. A branch receives a brief conceptual preview; detailed branching, review, conflicts and recovery remain follow-up learning.
+
+Profile README visuals appear at the activity transition and afterward. Participants then use real Git, nano or an existing plain-text editor, and their own GitHub profile repository. The practice does not require a fabricated teammate change just to exercise pull. Authored profile previews are examples, not connections to participant accounts. No audience practice links interrupt the standalone teaching sequence.
+
+Guide checkmarks and setup checkmarks are self-reported, never inferred from website actions. v4 progress keeps slide and practice positions independent and leaves old simulator storage untouched. Legacy links resolve to canonical topics or explain the new guide.
+
+The session budgets approximately 25 minutes for the visual lesson, 25 minutes for profile practice and closing, and ten minutes for catch-up/questions. Installation and account/authentication setup are advance work. The timing still needs rehearsal with beginners.
+
+Facilitation: [Run sheet and setup](../docs/FACILITATOR.md). The [initial profile README handbook plan](PROFILE_README_IMPLEMENTATION_PLAN.md) is retained as historical context; the two-part sequence here supersedes its interleaved teaching/practice structure. The revised flow passes tests, lint/build, 120 layout checks across all 24 slides at desktop/mobile/narrow mobile/tablet/4:3 presentation sizes, the lesson-to-activity transition, and nine representative accessibility scans, including the scenario at desktop and narrow mobile sizes. An earlier offline two-person Git rehearsal verified the underlying command sequence. Live GitHub, physical-projector, Safari, and beginner timing checks remain in the facilitator guide.
+
+---
+
+# Historical: final polish, November 4, 2026
+
+The colorful workshop implementation is complete. This pass preserves the approved visual direction and teaching sequence while refining access and interaction.
+
+- A semantic main landmark contains the workshop tab panel. Skip to content focuses the content without changing the route or active practice tool. Heading focus follows lesson navigation and practice progression; keyboard view-tab navigation retains tab focus.
+- Dialogs have accessible names, keyboard containment and Escape support, with focus restored on dismissal. Presentation arrow navigation also works when its navigation buttons have focus. Fullscreen falls back to the in-window presentation on unsupported or rejected requests.
+- Practice has a visible Command label and Run button, clear error contrast, progressively announced hints, an explicit final-hint state, and clean command input after an exercise reset. The review activity uses a Pull request control rather than a misleading Terminal control; its read-only review diff remains separate from editing tools.
+- Touch controls, file selectors and focus indicators are more consistent. Commit history is keyboard-scrollable. Reduced-motion and forced-color behavior are supported. A laptop-width opening overflow and diagram/projection clipping were corrected; no horizontal page overflow remains in the tested layouts.
+
+Verification: build, lint and all model/exercise, graph, demo and curriculum tests pass. Playwright completed all twelve finishable activities, return-to-slides navigation, glossary and migration. Keyboard checks cover skip links, view tabs, content focus, dialogs, hints, Run/Enter, command history, errors and resets. All 59 slides were checked at 320, 768 and 1024 CSS-pixel widths with reduced motion; previous checks cover 390 and 1440 widths. All 59 slides fit the 1024x768 projector view. Unsupported and rejected fullscreen fallbacks pass. Firefox smoke coverage includes opening, command practice/progression and the reference dialog. Axe reports no violations on eight representative opening, lesson, practice, review, dialog, editor and history states (WCAG A/AA and best-practice rules).
+
+Browser/IAB remains unavailable, so validation uses local Playwright browsers. Manual screen-reader testing, Safari and the physical workshop projector remain unverified. The site has not been deployed.
+
+---
+
+# Curriculum update: stage 2, November 4, 2026
+
+The workshop now contains 59 short slides with stable topic URLs. The first nine chapters cover the core session (roughly 65-75 minutes including practice and questions); the final three contain optional conflict, recovery and independent activities.
+
+Core sequence: relatable file-version problem; Git and GitHub definitions; repositories and practice setup; terminal; commits, status and staging; differences and history; branches; sharing; review and merge; text conflict demonstration; undo demonstrations; GitHub follow-up and recap. Commands are explained before the linked activity requires them. Each activity begins with its own prepared repository.
+
+The accepted common topics are included in context: save/commit/push, unfinished edits on branches, teammate updates and rejected pushes, pull versus pull request, normal merge conflicts, undo choices, clone/fork/ZIP, visibility, sensitive files and .gitignore. The latter topics are conceptual guidance, without implying that cloning or ignore rules are supported by the browser simulator.
+
+Core edits use README.md meeting locations and team-notes.md. The live staging, commit, branch and sharing examples match these files. A meeting-location conflict and text revert/unstage examples demonstrate common mistakes without requiring JSON. Sensor syntax is introduced before the optional exercises.
+
+Quick reference has a glossary. Completed activities offer Continue slides as the primary action. Progress migrates from v2 to v3, preserving compatible sessions and the old storage record; revised activities restart with a one-time notice. Topic IDs retain saved slide identity across reorders.
+
+Validation: automated model/exercise, graph, all ten demo sequences, curriculum ordering and migration checks; Playwright completion of all twelve finishable activities; slide-return navigation, glossary and migration UI; all 59 slides at 1440x1000 and 390x844; multi-step projection examples at 1280x800. Browser/IAB remains unavailable, so Chromium Playwright was used. Review corrected natural-height teaching diagrams and projected conflict clipping. No deployment was performed.
+
+---
+
+# Colorful Workshop: stage 1, November 4, 2026
+
+The user selected [concept C](concepts/workshop-refresh/c-colorful-workshop.png). This direction supersedes the historical Multiverse and GitHub-inspired styles below.
+
+## Approved foundation
+
+- White background and surfaces; indigo text #1D104F, cobalt primary actions #1248EE, lavender panels #F3F0FF, coral label accents #FFB0A2, yellow step labels #FFDA4B. System sans headings and controls; monospace only for commands, files and technical output.
+- One shared header: original EMBS mark, UF EMBS, Slides, Practice, Quick reference. Active tab has a cobalt underline. Existing chapter navigation, Present, progress, notes, hints and resets remain usable.
+- Opening copy: Intro to Git and GitHub Workshop; Learn to track changes and work together.; Start slides; Open practice (Resume practice when saved work exists). No extra promotional labels.
+- Opening illustration [workshop-landscape.png](../src/assets/workshop-landscape.png) extracted with built-in ImageGen from concept C. Coral sun, lavender mountains, blue hill, white path, indigo trees and yellow shrub. No overlay, drifting animation or painted scenery. Live text and controls remain HTML.
+- Representative Git/GitHub comparison uses crisp computer/cloud SVG icons, coral term labels and direct explanations. Practice uses white tools with lavender headers, a yellow step indicator, and a collapsible project summary.
+
+## Scope and review
+
+Stage 1 establishes appearance, navigation and representative screens. Stage 2 owns the full slide rewrite/reorder and exercise-content changes; stage 3 owns comprehensive polish. Existing simulator state, progress key and exercise logic are retained.
+
+Concept-to-implementation review covers white background, palette, sans typography, left-aligned opening, illustration placement, cobalt CTAs, underline navigation, comparison icons and yellow practice steps. Intentional adaptations: existing chapter/presentation controls and supplied EMBS logo remain; practice retains the existing sensor exercises until stage 2 rather than implementing the concept's illustrative meeting-notes task. Smaller screens stack artwork beneath text. The asset is a separate generated illustration, so its mountain/tree contours differ slightly from the concept.
+
+---
+
 # Git Multiverse: implemented direction
 
 The [Git Multiverse brief](GIT_MULTIVERSE_BRIEF.md) defines the product scope; the October 11 visual revision below supersedes its pixel-art treatment. Its redesign is implemented across the existing React app. The earlier GitHub direction below is retained as historical context.
