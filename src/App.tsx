@@ -1,751 +1,113 @@
 import { useEffect, useRef, useState } from "react";
-import embsLogo from "./assets/embs_logo.png";
-import { chapters, slides } from "./data/lessons";
-import { exercises, reference } from "./data/exercises";
-import type { Exercise } from "./data/exercises";
-import { execute } from "./lib/git";
-import type { Repo } from "./lib/git";
-import type { KeyboardEvent as ReactKeyboardEvent } from "react";
+import { checkpoints, slides } from "./data/workshop";
+import { readState, resolveHash, stateHash, storageKey } from "./lib/handbook";
+import type { HandbookState } from "./lib/handbook";
 import Icon from "./components/Icon";
-import SlideVisual from "./components/SlideVisual";
-import Terminal from "./components/Terminal";
-import type { Entry } from "./components/Terminal";
-import Files from "./components/Files";
-import PullRequest from "./components/PullRequest";
 import Picker from "./components/Picker";
-import RepositoryGraph from "./components/RepositoryGraph";
-import RepositoryCompanion from "./components/RepositoryCompanion";
 import Presentation from "./components/Presentation";
+import SlideCanvas from "./components/SlideCanvas";
+import PracticeGuide from "./components/PracticeGuide";
+import SetupReference from "./components/SetupReference";
 import "./App.css";
-import "./Multiverse.css";
 
-type Session = {
-  repo: Repo;
-  step: number;
-  actions: string[];
-  entries: Entry[];
-  reviewed: boolean;
-  merged: boolean;
-};
-type Saved = {
-  version: 2;
-  tab: "slides" | "practice";
-  slide: number;
-  exercise: string;
-  sessions: Record<string, Session>;
-};
-const storageKey = "uf-embs-git-workshop-v2";
-function fresh(exercise: Exercise): Session {
-  return {
-    repo: exercise.seed(),
-    step: 0,
-    actions: [],
-    entries: [],
-    reviewed: false,
-    merged: false,
-  };
+function initialState() {
+  let raw = null;
+  try { raw = localStorage.getItem(storageKey); } catch { /* The guide works without storage. */ }
+  return resolveHash(location.hash, readState(raw));
 }
-function loadStored(): Saved {
-  const fallback: Saved = {
-    version: 2,
-    tab: "slides",
-    slide: 0,
-    exercise: "terminal",
-    sessions: {},
-  };
-  try {
-    const raw = localStorage.getItem(storageKey);
-    if (!raw) return fallback;
-    const data = JSON.parse(raw);
-    if (
-      data.version !== 2 ||
-      !["slides", "practice"].includes(data.tab) ||
-      !Number.isInteger(data.slide) ||
-      data.slide < 0 ||
-      data.slide >= slides.length ||
-      !exercises.some((e) => e.id === data.exercise) ||
-      typeof data.sessions !== "object" ||
-      !data.sessions
-    )
-      return fallback;
-    for (const [id, s] of Object.entries(data.sessions) as [
-      string,
-      Session,
-    ][]) {
-      const e = exercises.find((e) => e.id === id);
-      if (
-        !e ||
-        !s.repo ||
-        !Array.isArray(s.repo.commits) ||
-        !s.repo.files ||
-        !s.repo.index ||
-        !s.repo.branches ||
-        !Array.isArray(s.repo.conflicts) ||
-        !Array.isArray(s.entries) ||
-        !Array.isArray(s.actions) ||
-        !Number.isInteger(s.step) ||
-        s.step < 0 ||
-        s.step > e.steps.length
-      )
-        return fallback;
-    }
-    return data;
-  } catch {
-    return fallback;
-  }
-}
-function route(saved: Saved): Saved {
-  const match = location.hash.match(/^#(slides|practice)\/([\w-]+)$/);
-  if (!match) return saved;
-  if (match[1] === "practice" && exercises.some((e) => e.id === match[2]))
-    return { ...saved, tab: "practice", exercise: match[2] };
-  const number = Number(match[2]);
-  return match[1] === "slides" &&
-    Number.isInteger(number) &&
-    number >= 1 &&
-    number <= slides.length
-    ? { ...saved, tab: "slides", slide: number - 1 }
-    : saved;
-}
-function load(): Saved {
-  return route(loadStored());
-}
+
 export default function App() {
-  const [saved, setSaved] = useState<Saved>(load);
-  const [picker, setPicker] = useState<
-    "lessons" | "exercises" | "reference" | null
-  >(null);
+  const [saved, setSaved] = useState<HandbookState>(() => initialState().state);
+  const [notice, setNotice] = useState<string | null>(() => initialState().notice);
+  const [topics, setTopics] = useState(false);
   const [notes, setNotes] = useState(false);
   const [presenting, setPresenting] = useState(false);
+  const [storageFailed, setStorageFailed] = useState(false);
+  const savedRef = useRef(saved);
+  const content = useRef<HTMLElement>(null);
   const presentTrigger = useRef<HTMLButtonElement>(null);
-  const [hint, setHint] = useState(0),
-    [view, setView] = useState<"terminal" | "files" | "history">("terminal");
-  const [resetting, setResetting] = useState(false),
-    [storageError, setStorageError] = useState(false);
-  const slide = slides[saved.slide],
-    exercise = exercises.find((e) => e.id === saved.exercise)!;
-  const session = saved.sessions[exercise.id] ?? fresh(exercise);
-  const done = session.step >= exercise.steps.length;
-  const currentStep =
-    exercise.steps[Math.min(session.step, exercise.steps.length - 1)];
-  const passed =
-    !done &&
-    currentStep.check({
-      repo: session.repo,
-      actions: session.actions,
-      reviewed: session.reviewed,
-      merged: session.merged,
-    });
-  const exerciseIndex = exercises.indexOf(exercise);
-  const completed = exercises.filter(
-    (e) => saved.sessions[e.id]?.step >= e.steps.length,
-  ).length;
+  const firstNavigation = useRef(true);
+  const slideIndex = Math.max(0, slides.findIndex(item => item.id === saved.slide));
+  const slide = slides[slideIndex];
+  const checkpoint = checkpoints.find(item => item.id === saved.checkpoint) ?? checkpoints[0];
+
   useEffect(() => {
-    const hash =
-      saved.tab === "slides"
-        ? `#slides/${saved.slide + 1}`
-        : `#practice/${saved.exercise}`;
-    if (location.hash !== hash) window.history.replaceState(null, "", hash);
-  }, [saved.tab, saved.slide, saved.exercise]);
+    savedRef.current = saved;
+    let failed = false;
+    try { localStorage.setItem(storageKey, JSON.stringify(saved)); }
+    catch { failed = true; }
+    queueMicrotask(() => setStorageFailed(failed));
+  }, [saved]);
+
   useEffect(() => {
-    const navigate = () => {
-      setSaved((s) => route(s));
-      setPicker(null);
-      setHint(0);
-      setView("terminal");
-      setPresenting(false);
-    };
-    window.addEventListener("hashchange", navigate);
-    return () => window.removeEventListener("hashchange", navigate);
+    history.replaceState(null, "", stateHash(savedRef.current));
+    function route() {
+      if (location.hash === "#main") { content.current?.focus(); return; }
+      const next = resolveHash(location.hash, savedRef.current);
+      history.replaceState(null, "", stateHash(next.state));
+      savedRef.current = next.state;
+      setSaved(next.state);
+      setNotice(next.notice);
+      setTopics(false);
+      if (next.state.view !== "slides") setPresenting(false);
+    }
+    window.addEventListener("hashchange", route);
+    return () => window.removeEventListener("hashchange", route);
   }, []);
 
   useEffect(() => {
-    let failed = false;
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(saved));
-    } catch {
-      failed = true;
+    if (firstNavigation.current) { firstNavigation.current = false; return; }
+    if (!presenting) {
+      content.current?.querySelector<HTMLElement>("h1")?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
-    queueMicrotask(() => setStorageError(failed));
-  }, [saved]);
+  }, [saved.view, saved.slide, saved.checkpoint, presenting]);
+
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, [saved.tab, saved.exercise, saved.slide]);
-  useEffect(() => {
-    function key(e: KeyboardEvent) {
-      if (
-        saved.tab !== "slides" ||
-        picker ||
-        e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey ||
-        (e.target as HTMLElement).isContentEditable ||
-        (e.target as HTMLElement).closest("dialog, summary, [role='tablist']") ||
-        ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(
-          (e.target as HTMLElement).tagName,
-        )
-      )
-        return;
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        e.preventDefault();
-        setSaved((s) => ({
-          ...s,
-          slide: Math.max(
-            0,
-            Math.min(
-              slides.length - 1,
-              s.slide + (e.key === "ArrowRight" ? 1 : -1),
-            ),
-          ),
-        }));
+    function key(event: KeyboardEvent) {
+      if (saved.view !== "slides" || presenting || topics || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+      const target = event.target as HTMLElement;
+      if (target.closest("button, a, input, textarea, select, summary, dialog, [contenteditable='true']")) return;
+      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        event.preventDefault();
+        const next = Math.min(slides.length - 1, Math.max(0, slideIndex + (event.key === "ArrowRight" ? 1 : -1)));
+        location.hash = `slides/${slides[next].id}`;
       }
     }
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [saved.tab, picker]);
-  function updateSession(change: (s: Session) => Session) {
-    setSaved((s) => ({
-      ...s,
-      sessions: {
-        ...s.sessions,
-        [exercise.id]: change(s.sessions[exercise.id] ?? fresh(exercise)),
-      },
-    }));
+  }, [saved.view, presenting, topics, slideIndex]);
+
+  function toggleCheckpoint(id: string) {
+    setSaved(previous => ({ ...previous, completed: previous.completed.includes(id) ? previous.completed.filter(value => value !== id) : [...previous.completed, id] }));
   }
-  function command(input: string) {
-    updateSession((s) => {
-      const result = execute(s.repo, input),
-        valid =
-          result.ok || result.repo.conflicts.length > s.repo.conflicts.length;
-      return {
-        ...s,
-        repo: result.repo,
-        actions:
-          valid && result.action ? [...s.actions, result.action] : s.actions,
-        entries:
-          input === "clear"
-            ? []
-            : [
-                ...s.entries,
-                { command: input, output: result.output, ok: result.ok },
-              ].slice(-80),
-      };
-    });
-  }
-  function selectExercise(id: string) {
-    setSaved((s) => ({ ...s, exercise: id, tab: "practice" }));
-    setPicker(null);
-    setView("terminal");
-    setHint(0);
-    setResetting(false);
-  }
-  function advanceStep() {
-    updateSession((s) => ({ ...s, step: s.step + 1, actions: [] }));
-    setHint(0);
-    setView("terminal");
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }
-  function tabKey(e: ReactKeyboardEvent<HTMLButtonElement>) {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
-    e.preventDefault();
-    const tab =
-      e.key === "Home"
-        ? "slides"
-        : e.key === "End"
-          ? "practice"
-          : saved.tab === "slides"
-            ? "practice"
-            : "slides";
-    setSaved((s) => ({ ...s, tab }));
-    document.getElementById(`${tab}-tab`)?.focus();
+  function toggleSetup(index: number) {
+    setSaved(previous => ({ ...previous, setupCompleted: previous.setupCompleted.includes(index) ? previous.setupCompleted.filter(value => value !== index) : [...previous.setupCompleted, index] }));
   }
 
-  return (
-    <>
-    <div className={`app ${saved.tab === "slides" && saved.slide === 0 ? "opening" : ""}`} inert={presenting}>
-      <a className="skip-link" href="#main">
-        Skip to content
-      </a>
-      <header className="global-header">
-        <div className="brand">
-          <img src={embsLogo} alt="UF EMBS" />
-          <span>
-            UF EMBS <span className="repo-slash">/</span>{" "}
-            <strong>Git Multiverse</strong>
-          </span>
-        </div>
-        <span className="header-note">Git workshop</span>
+  return <>
+    <div className="app-shell" inert={presenting}>
+      <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); content.current?.focus(); }}>Skip to content</a>
+      <header className="site-header">
+        <a className="brand" href="#slides/welcome"><img src="/embs-logo.png" alt="" width="42" height="42" /><span><small>UF EMBS WORKSHOP</small><strong>Git & GitHub<span className="brand-period">.</span></strong></span></a>
+        <nav className="main-navigation" aria-label="Workshop"><a href={`#slides/${saved.slide}`} aria-current={saved.view === "slides" ? "page" : undefined}>Slides</a><a href={`#practice/${saved.checkpoint}`} aria-current={saved.view === "practice" ? "page" : undefined}>Practice</a></nav>
+        <a className={`resource-link ${saved.view === "setup" || saved.view === "reference" ? "active" : ""}`} href="#setup">Setup & reference<Icon name="right" size={16} /></a>
       </header>
-      <nav className="repo-navigation" aria-label="Workshop">
-        <div className="nav-inner">
-          <div role="tablist" aria-label="Workshop views">
-            <button
-              id="slides-tab"
-              role="tab"
-              aria-selected={saved.tab === "slides"}
-              tabIndex={saved.tab === "slides" ? 0 : -1}
-              onKeyDown={tabKey}
-              aria-controls="main"
-              onClick={() => setSaved((s) => ({ ...s, tab: "slides" }))}
-            >
-              <Icon name="file" />
-              Slides
-            </button>
-            <button
-              id="practice-tab"
-              role="tab"
-              aria-selected={saved.tab === "practice"}
-              tabIndex={saved.tab === "practice" ? 0 : -1}
-              onKeyDown={tabKey}
-              aria-controls="main"
-              onClick={() => setSaved((s) => ({ ...s, tab: "practice" }))}
-            >
-              <Icon name="terminal" />
-              Practice
-            </button>
+      <main id="main" className={`main-content view-${saved.view}`} ref={content} tabIndex={-1}>
+        {notice ? <div className="route-notice" role="status"><p>{notice}</p><button className="icon-button" aria-label="Dismiss notice" onClick={() => setNotice(null)}><Icon name="close" /></button></div> : null}
+        {saved.view === "slides" ? <>
+          <div className="lesson-toolbar"><button className="topic-button" onClick={() => setTopics(true)} aria-haspopup="dialog"><Icon name="book" size={17} /><span>{slide.section}</span><span className="topic-chevron" aria-hidden="true">⌄</span></button><div className="lesson-tools"><span className="session-length">50 min + time for questions</span><button className="button" ref={presentTrigger} onClick={() => setPresenting(true)}><Icon name="expand" size={16} />Present</button></div></div>
+          <SlideCanvas slide={slide} index={slideIndex} />
+          <div className="slide-bottom"><nav className="slide-navigation" aria-label="Slide navigation"><button className="icon-button" disabled={slideIndex === 0} aria-label="Previous slide" onClick={() => { location.hash = `slides/${slides[slideIndex - 1].id}`; }}><Icon name="left" /></button><span><strong>{String(slideIndex + 1).padStart(2, "0")}</strong><span> / {String(slides.length).padStart(2, "0")}</span></span><button className="icon-button" disabled={slideIndex === slides.length - 1} aria-label="Next slide" onClick={() => { location.hash = `slides/${slides[slideIndex + 1].id}`; }}><Icon name="right" /></button></nav>
+            {slide.practice ? <a className="practice-handoff" href={`#practice/${slide.practice}`}>Try it in Practice<Icon name="right" size={17} /></a> : <span className="slide-caption">{slideIndex === 0 ? "Your profile. Your first commits." : "A little explanation. Then your turn."}</span>}
           </div>
-          <button
-            className="link-button"
-            onClick={() => setPicker("reference")}
-          >
-            Reference
-          </button>
-        </div>
-      </nav>
-      <main
-        id="main"
-        role="tabpanel"
-        aria-labelledby={`${saved.tab}-tab`}
-        className="main-content"
-        tabIndex={-1}
-      >
-        {saved.tab === "slides" ? (
-          <>
-            <div className="lesson-toolbar">
-              <div>
-                <button className="button" onClick={() => setPicker("lessons")}>
-                  <Icon name="left" />
-                  Lessons
-                </button>
-                <span className="toolbar-separator" />
-                <span>
-                  {String(slide.chapter + 1).padStart(2, "0")} /{" "}
-                  {chapters[slide.chapter].title}
-                </span>
-                {chapters[slide.chapter].extra ? (
-                  <span className="optional-label">Optional</span>
-                ) : null}
-              </div>
-              <button ref={presentTrigger} className="button present-button" onClick={() => setPresenting(true)}><Icon name="expand" />Present</button>
-            </div>
-            <section
-              className={`slide-canvas visual-${slide.visual}`}
-              aria-label={`Slide ${saved.slide + 1}`}
-            >
-              <div className="slide-copy">
-                <h1>{slide.title}</h1>
-                <p>{slide.body}</p>
-              </div>
-              <SlideVisual key={saved.slide} slide={slide} />
-              {saved.slide === 0 ? <div className="journey-actions"><button className="button primary" onClick={() => setSaved((s) => ({ ...s, slide: 1 }))}>Begin the journey <Icon name="right" /></button>{Object.keys(saved.sessions).length > 0 ? <button className="button resume-button" onClick={() => selectExercise(saved.exercise)}>Resume practice</button> : null}</div> : null}
-              {slide.exercise ? (
-                <button
-                  className="button practice-link"
-                  onClick={() => selectExercise(slide.exercise!)}
-                >
-                  Try it in Practice
-                  <Icon name="right" />
-                </button>
-              ) : null}
-            </section>
-            <div className="page-navigation">
-              <button
-                className="button"
-                disabled={saved.slide === 0}
-                onClick={() => setSaved((s) => ({ ...s, slide: s.slide - 1 }))}
-              >
-                <Icon name="left" />
-                Previous
-              </button>
-              <span>
-                {String(saved.slide + 1).padStart(2, "0")} / {slides.length}
-              </span>
-              <button
-                className="button"
-                disabled={saved.slide === slides.length - 1}
-                onClick={() => setSaved((s) => ({ ...s, slide: s.slide + 1 }))}
-              >
-                Next
-                <Icon name="right" />
-              </button>
-            </div>
-            <div className="speaker-tools">
-              <button
-                className="link-button muted"
-                aria-expanded={notes}
-                onClick={() => setNotes(!notes)}
-              >
-                {notes ? "Hide" : "Show"} presenter notes
-              </button>
-              {notes ? <p className="speaker-notes">{slide.notes}</p> : null}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="practice-toolbar">
-              <span>
-                <span className="accent">
-                  Practice {String(exercise.chapter + 1).padStart(2, "0")}
-                </span>
-                <span className="repo-slash"> / </span>
-                {exercise.title}
-              </span>
-              <button className="button" onClick={() => setPicker("exercises")}>
-                Exercises
-              </button>
-            </div>
-            {done ? (
-              <section className="exercise-complete">
-                <span className="completion-icon">
-                  <Icon name="check" size={32} />
-                </span>
-                <h1>{exercise.title}: complete.</h1>
-                <p>
-                  {exercise.id === "first-commit"
-                    ? "The sensor setting is committed. Your team notes stayed out."
-                    : exercise.id === "conflict"
-                      ? "You resolved the conflict and joined both histories."
-                      : "You finished each step. Keep building on what you learned."}
-                </p>
-                <div>
-                  <button
-                    className="button"
-                    onClick={() => {
-                      const index = slides.findIndex(
-                        (s) => s.exercise === exercise.id,
-                      );
-                      setSaved((s) => ({
-                        ...s,
-                        tab: "slides",
-                        slide: index >= 0 ? index : s.slide,
-                      }));
-                    }}
-                  >
-                    Back to slides
-                  </button>
-                  {exerciseIndex < exercises.length - 1 ? (
-                    <button
-                      className="button primary"
-                      onClick={() =>
-                        selectExercise(exercises[exerciseIndex + 1].id)
-                      }
-                    >
-                      Next exercise
-                      <Icon name="right" />
-                    </button>
-                  ) : null}
-                </div>
-                <button
-                  className="link-button"
-                  onClick={() => {
-                    updateSession(() => fresh(exercise));
-                    setHint(0);
-                    setView("terminal");
-                  }}
-                >
-                  Try this exercise again
-                </button>
-              </section>
-            ) : (
-              <>
-                <div className="practice-heading">
-                  <div>
-                    <h1>{currentStep.title}</h1>
-                    {exercise.kind !== "sandbox" ? (
-                      <span className="step-counter">
-                        Step {session.step + 1} of {exercise.steps.length}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p>{currentStep.instruction}</p>
-                </div>
-                <div className={`practice-workspace ${view === "history" ? "history-workspace" : ""}`}>
-                <div className="active-tool">
-                <div className="tool-selector" aria-label="Practice tools">
-                  {(["terminal", "files", "history"] as const).map((tool) => <button key={tool} aria-pressed={view === tool} onClick={() => setView(tool)}><Icon name={tool === "terminal" ? "terminal" : tool === "files" ? "file" : "branch"} />{tool === "terminal" ? "Terminal" : tool === "files" ? "Files" : "History"}</button>)}
-                </div>
-                {exercise.kind === "pr" && view === "terminal" ? (
-                  <PullRequest
-                    repo={session.repo}
-                    reviewed={session.reviewed}
-                    merged={session.merged}
-                    onReview={() =>
-                      updateSession((s) => ({ ...s, reviewed: true }))
-                    }
-                    onMerge={() =>
-                      updateSession((s) => {
-                        const result = execute(
-                          s.repo,
-                          "git merge feature/docs",
-                        );
-                        return { ...s, repo: result.repo, merged: result.ok };
-                      })
-                    }
-                  />
-                ) : (
-                  <>
-                    {view === "terminal" ? (
-                      <Terminal
-                        key={exercise.id}
-                        entries={session.entries}
-                        onCommand={command}
-                        onReset={() => setResetting(true)}
-                      />
-                    ) : view === "files" ? (
-                      <Files
-                        key={`${exercise.id}-${session.step}`}
-                        repo={session.repo}
-                        preferred={currentStep.file}
-                        onEdit={(file, content) =>
-                          updateSession((s) => ({
-                            ...s,
-                            repo: {
-                              ...s.repo,
-                              files: { ...s.repo.files, [file]: content },
-                            },
-                          }))
-                        }
-                      />
-                    ) : (
-                      <RepositoryGraph key={exercise.id} repo={session.repo} />
-                    )}
-                    <div className="practice-utilities">
-                      <button
-                        className="link-button"
-                        aria-expanded={hint > 0}
-                        onClick={() => setHint(Math.min(3, hint + 1))}
-                      >
-                        {hint > 0 && hint < 3
-                          ? "Another hint?"
-                          : "Need a hint?"}
-                      </button>
-                    </div>
-                  </>
-                )}
-                {hint > 0 ? (
-                  <div className="hint-box">
-                    <strong>Hint {hint} of 3</strong>
-                    <p>{currentStep.hints[hint - 1]}</p>
-                    <button className="link-button" onClick={() => setHint(0)}>
-                      Hide hint
-                    </button>
-                  </div>
-                ) : null}
-                {passed ? (
-                  <div className="step-success" role="status">
-                    <Icon name="check" />
-                    <span>
-                      {session.step === exercise.steps.length - 1
-                        ? "You’ve reached the goal."
-                        : "That’s it. Ready for the next step?"}
-                    </span>
-                    <button className="button primary" onClick={advanceStep}>
-                      {session.step === exercise.steps.length - 1
-                        ? "Finish exercise"
-                        : "Continue"}
-                      <Icon name="right" />
-                    </button>
-                  </div>
-                ) : null}
-                </div>
-                <RepositoryCompanion key={exercise.id} repo={session.repo} exercise={exercise.id} onHistory={() => setView("history")} />
-                </div>
-              </>
-            )}
-            <div className="practice-note">
-              <span>
-                Practice runs in your browser.{" "}
-                <button
-                  className="link-button muted"
-                  onClick={() => setPicker("reference")}
-                >
-                  About the simulator
-                </button>
-              </span>
-              <span>
-                {completed
-                  ? `${completed} exercise${completed === 1 ? "" : "s"} complete`
-                  : ""}
-              </span>
-            </div>
-            <div className="page-navigation">
-              <button
-                className="button"
-                disabled={exerciseIndex === 0}
-                onClick={() => selectExercise(exercises[exerciseIndex - 1].id)}
-              >
-                <Icon name="left" />
-                Previous exercise
-              </button>
-              {!done ? (
-                <button className="button" disabled>
-                  Next exercise
-                  <Icon name="right" />
-                </button>
-              ) : null}
-            </div>
-          </>
-        )}
-        {storageError ? (
-          <p className="storage-error" role="status">
-            Your browser couldn’t save progress. Keep this tab open to continue
-            your session.
-          </p>
-        ) : null}
+          <div className="speaker-tools"><button className="text-button" aria-expanded={notes} aria-controls="presenter-notes" onClick={() => setNotes(value => !value)}>{notes ? "Hide" : "Show"} presenter notes</button>{notes ? <div id="presenter-notes" className="speaker-notes"><span>PRESENTER NOTES</span><p>{slide.notes}</p></div> : null}</div>
+        </> : saved.view === "practice" ? <PracticeGuide checkpoint={checkpoint} completed={saved.completed} onToggle={toggleCheckpoint} /> : <SetupReference view={saved.view} platform={saved.platform} onPlatform={platform => setSaved(previous => ({ ...previous, platform }))} setupCompleted={saved.setupCompleted} onToggleSetup={toggleSetup} />}
+        {storageFailed ? <p className="storage-notice" role="status">Progress couldn't be saved in this browser. You can keep using every page while this tab is open.</p> : null}
       </main>
-      <footer>
-        University of Florida <span>·</span> Engineering in Medicine &amp;
-        Biology Society
-      </footer>
-      {picker ? (
-        <Picker
-          title={
-            picker === "lessons"
-              ? "Lessons"
-              : picker === "exercises"
-                ? "Practice exercises"
-                : "Command reference"
-          }
-          onClose={() => setPicker(null)}
-        >
-          {picker === "lessons" ? (
-            chapters.map((chapter, i) => (
-              <button
-                className="picker-row"
-                key={chapter.title}
-                onClick={() => {
-                  setSaved((s) => ({
-                    ...s,
-                    slide: slides.findIndex((slide) => slide.chapter === i),
-                  }));
-                  setPicker(null);
-                  setNotes(false);
-                }}
-              >
-                <span className="lesson-number">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span>
-                  {chapter.title}
-                  {chapter.extra ? <small>Optional extension</small> : null}
-                </span>
-                <span className="muted">{chapter.duration}</span>
-              </button>
-            ))
-          ) : picker === "exercises" ? (
-            exercises.map((e) => (
-              <button
-                className="picker-row"
-                key={e.id}
-                onClick={() => selectExercise(e.id)}
-              >
-                <span className="lesson-number">
-                  {saved.sessions[e.id]?.step >= e.steps.length ? (
-                    <Icon name="check" />
-                  ) : (
-                    <Icon name={e.kind === "pr" ? "branch" : "terminal"} />
-                  )}
-                </span>
-                <span>
-                  {e.title}
-                  <small>
-                    {e.extra ? "Optional · " : ""}
-                    {e.description}
-                  </small>
-                </span>
-                <Icon name="right" />
-              </button>
-            ))
-          ) : (
-            <>
-              <p className="reference-intro">
-                Commands for the workshop. The examples below run in our browser
-                simulator.
-              </p>
-              <div className="reference-list">
-                {reference.map(([command, description]) => (
-                  <div key={command}>
-                    <code>{command}</code>
-                    <p>{description}</p>
-                  </div>
-                ))}
-              </div>
-              <section className="simulator-about">
-                <h3>About this practice environment</h3>
-                <p>
-                  This is a Git learning simulator with selected commands. It
-                  uses snapshots, staging, branches, and merge history. It does
-                  not run a system shell or connect to your GitHub account.
-                </p>
-                <p>
-                  Remote operations and pull requests are simulated. Merge
-                  conflicts may show entire file sections. Revert supports
-                  clean, single-parent commits. Unsupported commands and flags
-                  return an explanation.
-                </p>
-                <h3>Try Git outside the workshop</h3>
-                <p>
-                  When you’re ready, install Git, configure your name and email,
-                  and practice on a small local project. Use a GitHub account to
-                  collaborate with a teammate.
-                </p>
-                <a
-                  href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Install Git
-                </a>
-                <span> · </span>
-                <a
-                  href="https://docs.github.com/en/get-started/start-your-journey/hello-world"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub’s Hello World guide
-                </a>
-              </section>
-            </>
-          )}
-        </Picker>
-      ) : null}
-      {resetting ? (
-        <Picker
-          title="Reset this exercise?"
-          onClose={() => setResetting(false)}
-        >
-          <p>
-            Your commands and edits in this exercise will be cleared. Progress
-            in other exercises stays saved.
-          </p>
-          <div className="reset-actions">
-            <button className="button" onClick={() => setResetting(false)}>
-              Keep working
-            </button>
-            <button
-              className="button danger"
-              onClick={() => {
-                updateSession(() => fresh(exercise));
-                setResetting(false);
-                setView("terminal");
-                setHint(0);
-              }}
-            >
-              Reset exercise
-            </button>
-          </div>
-        </Picker>
-      ) : null}
+      <footer className="site-footer"><span>University of Florida <span aria-hidden="true">/</span> Engineering in Medicine & Biology Society</span><a href="#setup">Before you arrive<Icon name="right" size={14} /></a></footer>
+      {topics ? <Picker title="The workshop" onClose={() => setTopics(false)}><p className="topic-intro">18 short explanations. One real project.</p><div className="topic-list">{slides.map((item, i) => <a key={item.id} className="topic-row" href={`#slides/${item.id}`} aria-current={slide.id === item.id ? "page" : undefined} onClick={() => setTopics(false)}><span>{String(i + 1).padStart(2, "0")}</span><strong>{item.title}</strong><Icon name="right" size={15} /></a>)}</div></Picker> : null}
     </div>
-    {presenting && saved.tab === "slides" ? <Presentation trigger={presentTrigger} slide={slide} index={saved.slide} count={slides.length} onNavigate={(delta) => setSaved((s) => ({ ...s, slide: Math.max(0, Math.min(slides.length - 1, s.slide + delta)) }))} onExit={() => setPresenting(false)} /> : null}
-    </>
-  );
+    {presenting ? <Presentation slide={slide} index={slideIndex} count={slides.length} trigger={presentTrigger} onExit={() => setPresenting(false)} onNavigate={delta => { const next = Math.min(slides.length - 1, Math.max(0, slideIndex + delta)); location.hash = `slides/${slides[next].id}`; }} /> : null}
+  </>;
 }
