@@ -6,7 +6,7 @@ const slideIds = new Set(slides.map(({ id }) => id));
 const checkpointIds = new Set(checkpoints.map(({ id }) => id));
 assert.equal(slideIds.size, slides.length, "Slide links must be unique");
 assert.equal(checkpointIds.size, checkpoints.length, "Guide links must be unique");
-assert.ok(slides.length <= 20, "The core deck must retain its short workshop budget");
+assert.ok(slides.length <= 24, "The standalone lesson must retain its approximately 25-minute budget");
 for (const slide of slides) {
   if (slide.practice) assert.ok(checkpointIds.has(slide.practice), `${slide.id} links to an existing guide checkpoint`);
   assert.ok(slide.notes.trim(), `${slide.id} has presenter notes`);
@@ -15,6 +15,31 @@ for (const checkpoint of checkpoints) {
   assert.ok(slideIds.has(checkpoint.slide), `${checkpoint.id} links to a real lesson`);
   assert.ok(checkpoint.blocks.length, `${checkpoint.id} contains actions`);
 }
+
+const position = (id) => {
+  const index = slides.findIndex(slide => slide.id === id);
+  assert.ok(index >= 0, `${id} is available in the lesson`);
+  return index;
+};
+assert.equal(slides[0].id, "welcome", "The introduction opens the workshop");
+assert.equal(slides[1].id, "check-in", "Event check-in follows the introduction");
+assert.ok(slides[1].notes.includes("LATAAE6Q"), "Presenter notes retain the case-sensitive event code");
+for (const id of ["what-git", "what-github", "repository"]) {
+  assert.ok(position("team-project") < position(id), `${id} explains tools in the established class project scenario`);
+}
+for (const id of ["clone", "status", "diff", "staging", "commit", "history", "push", "pull"]) {
+  const slide = slides[position(id)];
+  assert.ok(slide.scenario?.trim(), `${id} explains when the command is useful`);
+  assert.ok(position("team-project") < position(id), `${id} follows the story setup`);
+  assert.ok(position(id) < position("apply"), `${id} is taught before the independent activity`);
+}
+for (const slide of slides.slice(0, position("apply"))) {
+  assert.equal(slide.practice, undefined, `${slide.id} belongs to the standalone lesson without a practice handoff`);
+}
+assert.equal(slides[position("apply")].practice, "create", "The explicit transition starts profile README practice");
+assert.ok(position("profile") > position("apply"), "Profile-specific setup follows the lesson-to-practice transition");
+assert.ok(position("push") < position("pull"), "The teammate update follows publishing our own work");
+assert.ok(position("recap") < position("apply"), "Participants review the workflow before applying it");
 
 const blank = defaultState();
 assert.equal(storageKey, "uf-embs-git-workshop-v4");
@@ -26,6 +51,8 @@ const original = {
   completed: ["create", "commit"], setupCompleted: [0, setupChecklist.length - 1], platform: "mac",
 };
 assert.deepEqual(readState(JSON.stringify(original)), original, "Valid progress round-trips");
+assert.equal(readState(JSON.stringify({ ...original, slide: "tools" })).slide, "what-github", "Saved comparison topic follows the new definitions");
+assert.equal(resolveHash("#slides/published", original).state.slide, "repeat", "Old profile result links reach the closing activity");
 const dirty = readState(JSON.stringify({
   ...original, view: "admin", slide: "removed", checkpoint: "removed", platform: "unsupported",
   completed: ["create", "create", "conflict", null, 3], setupCompleted: [0, 0, -1, 1.5, "1", setupChecklist.length, null],
@@ -65,7 +92,7 @@ for (const view of ["setup", "reference"]) {
 for (const hash of ["", "#", "#main"]) assert.deepEqual(resolveHash(hash, original), { state: original, notice: null });
 assert.equal(resolveHash("#slides", original).state.slide, original.slide);
 assert.equal(resolveHash("#practice", original).state.checkpoint, original.checkpoint);
-assert.equal(resolveHash("#slides/what-git", original).state.slide, "tools");
+assert.equal(resolveHash("#slides/what-git", original).state.slide, "what-git");
 assert.equal(resolveHash("#slides/log", original).state.slide, "history");
 assert.equal(resolveHash("#slides/24", original).state.slide, "history", "Legacy numeric slides retain topic meaning");
 assert.equal(resolveHash("#slides/32", original).state.slide, "clone");

@@ -33,6 +33,7 @@ const previousSlides = [
   "unstage", "restore", "revert", "capstone", "sandbox",
 ];
 const legacySlides: Record<string, string> = {
+  tools: "what-github", published: "repeat",
   "what-git": "tools", "what-github": "tools", "not-just-code": "repository",
   project: "profile", workshop: "welcome", terminal: "navigate", pwd: "navigate",
   ls: "navigate", cat: "navigate", init: "profile", add: "staging",
@@ -73,10 +74,11 @@ export function readState(raw: string | null): HandbookState {
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return fallback;
     const data = parsed as Record<string, unknown>;
     if (data.version !== 4) return fallback;
+    const oldSlide = typeof data.slide === "string" && Object.hasOwn(legacySlides, data.slide) ? legacySlides[data.slide] : undefined;
     return {
       ...fallback,
       view: typeof data.view === "string" && views.has(data.view as View) ? data.view as View : fallback.view,
-      slide: typeof data.slide === "string" && slideIds.has(data.slide) ? data.slide : fallback.slide,
+      slide: typeof data.slide === "string" && slideIds.has(data.slide) ? data.slide : oldSlide && slideIds.has(oldSlide) ? oldSlide : fallback.slide,
       checkpoint: typeof data.checkpoint === "string" && checkpointIds.has(data.checkpoint) ? data.checkpoint : fallback.checkpoint,
       platform: typeof data.platform === "string" && platforms.has(data.platform as Platform) ? data.platform as Platform : fallback.platform,
       completed: Array.isArray(data.completed)

@@ -1,5 +1,7 @@
 # Git and GitHub workshop: profile README redesign
 
+Current flow revision: the user subsequently requested a standalone visual Git/GitHub lesson followed by the README activity. The current 24-slide deck includes check-in as slide 2, a three-sentence class group-project scenario with Gael, Maya, and Jordan as slide 3, definitions, a Big 3 overview (add, commit, push), command scenarios (including pull), a brief branch concept, a recap, and an explicit transition to Practice. Budget approximately 25 minutes for teaching, 25 minutes for the profile activity, and ten minutes for questions/catch-up. The original interleaved 18-slide storyboard below is historical; see docs/FACILITATOR.md for the current run sheet.
+
 Status: implemented following the user's instruction on November 9, 2026. The approved Workshop handbook direction, 18-slide deck, real README guide, setup/reference, routing, and source retirement are in place. See README.md and docs/FACILITATOR.md for verification and remaining live rehearsal checks. This document retains the agreed implementation specification below.
 
 ## 1. Purpose and boundaries

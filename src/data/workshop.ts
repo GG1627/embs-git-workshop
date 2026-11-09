@@ -4,6 +4,9 @@ export type WorkshopSlide = {
   title: string;
   subtitle: string;
   visual: string;
+  scenario?: string;
+  goal?: string;
+  result?: string;
   notes: string;
   practice?: string;
 };
@@ -35,97 +38,159 @@ export type SetupGuide = {
 
 export const slides: WorkshopSlide[] = [
   {
-    id: "welcome", section: "Start here", title: "Make your first GitHub profile.",
-    subtitle: "A little about you. A real Git workflow.", visual: "welcome",
-    notes: "Welcome UF EMBS. Show the finished example and explain the outcome: one real repository on your computer and GitHub, containing a README you wrote. The website is our guide; it cannot see your terminal or check your work. Account, installation and authentication setup should be finished beforehand. We will take our time and repeat the workflow. No programming experience or VS Code is required.",
+    id: "welcome", section: "Start here", title: "Intro to Git & GitHub",
+    subtitle: "Track changes. Share your work. Work together.", visual: "welcome",
+    notes: "Welcome UF EMBS. This workshop has two parts: first a visual introduction to Git and GitHub through a class group-project story; then everyone applies the workflow to a GitHub profile README. Teach the whole story before opening Practice. Plan about 25 minutes for explanation, 25 for the README activity, and ten for questions and catch-up. Installation, accounts, and authentication should be prepared beforehand.",
   },
   {
-    id: "versions", section: "Start here", title: "Remember what changed.",
-    subtitle: "A history you can read, one change at a time.", visual: "versions",
-    notes: "Ask what people usually do when they want to keep an earlier version of a file. Git records versions of a project and lets you compare them. Focus on remembering what changed and why, rather than teaching every recovery command. Our example will start as a short introduction and gain a learning goal.",
+    id: "check-in", section: "Start here", title: "Check in for the workshop.",
+    subtitle: "Scan the QR code, then enter the event code.", visual: "check-in",
+    notes: "Leave this slide visible as attendees arrive. The event code is LATAAE6Q, exactly as shown, with uppercase letters and a final Q. It is case-sensitive. The supplied QR image is unchanged. Finish check-in before starting the lesson so attendance does not interrupt the story.",
   },
   {
-    id: "tools", section: "Start here", title: "Git saves. GitHub shares.",
-    subtitle: "Two tools. Two places. One project.", visual: "tools",
-    notes: "Git is the version-control tool on your computer. GitHub is a website that hosts Git repositories and supports collaboration. Git works locally without an internet connection; GitHub is not required to make a commit. Today we use both. Keep laptop/local on the left and GitHub/remote on the right throughout the deck.",
+    id: "team-project", section: "The scenario", title: "Scenario: A class group project",
+    subtitle: "Gael, Maya, and Jordan are preparing a class presentation.", visual: "team-project",
+    scenario: "You (Gael) are working with Maya and Jordan on a group presentation for class.\nEveryone is contributing project notes, a presentation outline, and a preparation checklist, so you need to keep track of everyone's changes.\nYour goal is to combine your work and make sure everyone has the latest version.",
+    notes: "Introduce the scenario immediately after check-in, before defining Git or GitHub. Read the three sentences: Gael (you), Maya, and Jordan are preparing a group presentation for class. Gael handles project notes, Maya handles the preparation checklist, and Jordan handles the outline. Keep this opening free of Git vocabulary. Refer back to these people and goals throughout the definitions. After the Big 3 overview, explain that Maya has already shared class-project on GitHub and sends Gael the link. The example files are project-notes.md, outline.md, and checklist.md. Later Gael changes the room from 101 to 202, Jordan needs the new details, Maya publishes an adapter reminder, and Jordan considers another outline on a branch. The example URL is fictional; participants use their own profile repositories in the activity.",
   },
   {
-    id: "repository", section: "Start here", title: "A project, with a memory.",
-    subtitle: "Repository = files + Git history.", visual: "repository",
-    notes: "Repository, or repo, means the project and the history Git keeps for it. Our project is intentionally small: README.md is an ordinary text file in Markdown format. The repository can contain more files later. Saving text in an editor and saving a version in Git are separate actions. Avoid .git internals.",
+    id: "versions", section: "The basics", title: "Why use version control?",
+    subtitle: "Keep a history of changes instead of making final_final copies.", visual: "versions",
+    notes: "Refer back to Gael, Maya, and Jordan's group presentation. Everyone needs the current project notes, outline, and checklist. Copies with final_final filenames make it difficult to know which version is current or what changed. Version control records a readable history of changes. The example uses ordinary text files, so no programming experience is needed. Avoid teaching recovery commands here.",
   },
   {
-    id: "profile", section: "Get your project", title: "Your username. Your repository.",
-    subtitle: "A public README that appears on your profile.", visual: "profile", practice: "create",
-    notes: "A profile README needs a public repository whose name matches your GitHub username, with a nonempty README.md in its root. Use New repository, choose your own account as owner, enter your username as the name, choose Public and enable Add README. If someone already has a profile repository, use it and preserve their existing content. Only include information they want public. Managed user accounts do not support profile READMEs; ask the facilitator for an ordinary practice repository instead.",
+    id: "what-git", section: "The basics", title: "What is Git?",
+    subtitle: "A tool that records versions of your project.", visual: "what-git",
+    notes: "Git is a version-control tool on your computer. A repository holds project files and the history Git keeps for them. Saved project versions are commits. You can compare versions and inspect their messages. Git works locally without GitHub or an internet connection. Saving a file in an editor does not automatically create a commit.",
   },
   {
-    id: "clone", section: "Get your project", title: "Bring it to your computer.",
-    subtitle: "Clone copies the files and their history.", visual: "clone", practice: "clone",
-    notes: "Open Code on the participant's own repository, select HTTPS and copy the URL. Choose an existing parent folder in Git Bash on Windows or Terminal on macOS/Linux. Run git clone with that URL. Replace placeholders with the real username; do not type the dollar prompt. Cloning makes the project folder and configures origin and the checked-out branch's upstream. No git init is needed inside the clone. A public clone can succeed without authenticating, so this alone does not verify push access.",
+    id: "what-github", section: "The basics", title: "What is GitHub?",
+    subtitle: "A website for hosting Git repositories and collaborating.", visual: "what-github",
+    notes: "GitHub is a website that hosts Git repositories and helps people share, discuss, and review work. It is separate from Git. Git records versions locally; GitHub can hold the team's online copy. A local commit does not appear on GitHub until you push it. Later we will use GitHub for a real profile repository, but the teaching story comes first.",
   },
   {
-    id: "navigate", section: "Get your project", title: "Find your README.",
-    subtitle: "Enter the folder. List the files. Read one.", visual: "navigate",
-    notes: "Use cd followed by the cloned folder's name to enter it. ls lists files; cat README.md reads text. pwd is a help command if someone is unsure where they are. Explain the command and filename separated by a space, then let participants try. These commands help us find our project; they are not a separate terminal course.",
+    id: "repository", section: "The basics", title: "What is a repository?",
+    subtitle: "Repository = project files + Git history.", visual: "repository",
+    notes: "Repo is short for repository. A repository includes project files and their saved history. In the class project, Gael maintains project-notes.md, Maya maintains checklist.md, and Jordan maintains outline.md. Markdown is ordinary text with simple formatting. Do not explain .git internals or ask learners to create a repository yet.",
   },
   {
-    id: "edit", section: "Make a change", title: "Write a little about yourself.",
-    subtitle: "Edit README.md. Save. Exit.", visual: "edit", practice: "edit",
-    notes: "Open nano README.md. Replace the starter with a heading and two short lines, or add to an existing profile. A nickname and learning interest are enough. Markdown headings begin with # and a space; a list item begins with - and a space. Teach Ctrl+O, Enter, Ctrl+X, and explain ^ means Ctrl. Use Control even on a Mac. If nano is unavailable, use an existing plain-text editor. This is a file save, not yet a Git commit. Keep this brief so profile decoration does not take over the workshop.",
+    id: "big-three", section: "The basics", title: "The Big 3: add, commit, push",
+    subtitle: "Select changes. Record a version. Share your commits.", visual: "big-three",
+    notes: "Briefly preview the workflow the group will use. git add selects current file contents for the next commit. git commit records the staged project snapshot on your computer. git push sends commits to a remote repository, GitHub in this workshop. Saving in an editor changes a file but does not stage, commit, or push it. Git can record versions without GitHub. Keep this overview under a minute. Next, return to the class project: Maya has shared its repository, and Gael needs a local copy. Teach each command in detail when its task arises.",
   },
   {
-    id: "status", section: "Save with Git", title: "Ask Git what it sees.",
+    id: "clone", section: "Get the project", title: "Copy a repository with git clone",
+    subtitle: "git clone", visual: "clone",
+    scenario: "Maya shared the class project on GitHub and sends you (Gael) the link.",
+    goal: "Get the files and Git history onto your computer.",
+    result: "A local class-project folder contains the files and their history.",
+    notes: "Use git clone once to copy an existing GitHub repository and its history to your computer. It creates the project folder and configures origin as the remote and the checked-out branch's upstream. Show the example command and the new local copy. The example-team/class-project address is illustrative; participants will clone their own real profile repository later. Do not run git init inside a clone.",
+  },
+  {
+    id: "navigate", section: "Get the project", title: "Open the project folder and read its files",
+    subtitle: "cd, ls, cat", visual: "navigate",
+    scenario: "You cloned the repository. Now find the presentation details.",
+    goal: "Enter class-project, list its files, and read the notes.",
+    result: "The notes show the current presentation location: Room 101.",
+    notes: "cd class-project enters the new folder, ls lists its files, and cat project-notes.md reads the notes. The notes currently say Location: Room 101. Explain the space between a command and its argument. These shell commands help navigate; they are not Git commands. Keep this explanation brief. pwd can help someone who is lost during the activity.",
+  },
+  {
+    id: "edit", section: "Make a change", title: "Edit and save the presentation location",
+    subtitle: "Edit the file, then save it.", visual: "edit",
+    scenario: "The group agrees to move the presentation from Room 101 to Room 202.",
+    goal: "Update project-notes.md and save the file.",
+    result: "Your file says Room 202. You have not created a Git commit yet.",
+    notes: "Show the note changing from Location: Room 101 to Location: Room 202. The file is saved on your computer. No new Git commit exists yet. Use an ordinary text edit in the story rather than turning this into an editor lesson; Practice will teach nano. Maya updates the checklist later, after your location change has been shared.",
+  },
+  {
+    id: "status", section: "Inspect the change", title: "Check changed files with git status",
     subtitle: "git status", visual: "status",
-    notes: "Run git status. It should show README.md as modified and not staged. Status describes changed and selected files without changing anything. Have participants point to their README in the output. Their branch name may differ from the example; that is fine. A clean working tree later will mean no pending file changes, not necessarily that everything has reached GitHub.",
+    scenario: "You saved the new location in the project notes.",
+    goal: "Find out which files Git sees as changed.",
+    result: "Git lists project-notes.md as modified and not staged.",
+    notes: "git status reports the branch and which files are changed or staged. It does not change files. The output shows project-notes.md as modified and not staged. This answers which file changed, not which lines. Your branch name can differ from the example in the eventual activity. Do not ask the audience to open Practice yet.",
   },
   {
-    id: "diff", section: "Save with Git", title: "Read the actual change.",
-    subtitle: "git diff", visual: "diff", practice: "inspect",
-    notes: "Minus lines are removed text; plus lines are added text. Ask a participant to describe their change before saving it. git diff compares working edits with staged contents; before staging here, that means changes since the last commit. It is not the history itself. If a pager opens, press q to return to the prompt. No output can mean the file was not saved or its changes were already staged.",
+    id: "diff", section: "Inspect the change", title: "See exactly what changed with git diff",
+    subtitle: "git diff", visual: "diff",
+    scenario: "Git reports that project-notes.md has changed.",
+    goal: "Check that only the intended location line changed.",
+    result: "The diff shows Room 101 removed and Room 202 added.",
+    notes: "git diff shows working edits compared with staged contents. Before staging in this example, it shows the edits since the last commit. Minus marks the removed Room 101 line; plus marks the added Room 202 line. Status tells you which file; diff tells you what changed. If a pager opens, q returns to the prompt. Read the diff before committing.",
   },
   {
-    id: "staging", section: "Save with Git", title: "Choose the next snapshot.",
-    subtitle: "git add README.md", visual: "staging",
-    notes: "Staging selects the current contents of README.md for the next commit. The file stays in the working folder. A repository snapshot also includes unchanged tracked files. If the participant edits again after staging, git add README.md again to select the newer version. Avoid introducing partial hunks or advanced staging. Ask what has been saved so far: editor contents are saved, the next commit is selected, but no new commit exists yet.",
+    id: "staging", section: "Record a version", title: "Select changes with git add",
+    subtitle: "git add project-notes.md", visual: "staging",
+    scenario: "You checked the location update. It is ready to record.",
+    goal: "Include the current notes in your next commit.",
+    result: "The current project-notes.md contents are staged for the next commit.",
+    notes: "git add project-notes.md stages its current contents. The file remains in the working folder; staging selects a copy of the contents for the next commit. Unchanged tracked files remain part of the project snapshot too. If you edit the file again, add it again to select the newer contents. Keep selective staging clear without introducing partial hunks.",
   },
   {
-    id: "commit", section: "Save with Git", title: "Give the change a name.",
-    subtitle: 'git commit -m "Introduce myself"', visual: "commit", practice: "commit",
-    notes: "A commit records a project snapshot with an author and message. -m supplies the message, and the quotes keep its words together. It saves the staged contents, not every working edit. The commit remains local. If author identity is missing, return to setup and configure name/email, using the participant's GitHub noreply email if desired. If nothing is staged, check status, save the edit and stage it first. Pause for everyone to see a successful commit.",
+    id: "commit", section: "Record a version", title: "Record a version with git commit",
+    subtitle: 'git commit -m "Update presentation location"', visual: "commit",
+    scenario: "The location update is staged for your next commit.",
+    goal: "Record the update with a message that describes it.",
+    result: "A new commit is saved on your computer. GitHub has not received it.",
+    notes: "git commit records the staged project snapshot with an author and descriptive message. Use git commit -m \"Update presentation location\". The -m flag supplies the message and the quotes keep its words together. It records selected contents, not every working edit. The new commit exists locally. Ask whether Maya can see it on GitHub yet; the answer is no.",
   },
   {
-    id: "history", section: "Save with Git", title: "There is your history.",
+    id: "history", section: "Record a version", title: "View commit history with git log",
     subtitle: "git log --oneline", visual: "history",
-    notes: "The newest commit appears first in this short log. The short identifier names the commit; each participant's identifier will differ. Read the message and distinguish the new introduction from the initial README commit. Looking at history does not change the files. Press q if the output opens in a pager. Do not introduce HEAD, resetting, or detached checkout.",
+    scenario: "You committed the presentation location update.",
+    goal: "Find your new commit and the version before it.",
+    result: "Your update appears first, above the initial project commit.",
+    notes: "git log --oneline lists short commit identifiers and messages, with the newest first. Show Update presentation location above Start class project. The identifiers are examples and differ in real repositories. Reading history does not change files. The local history still has a commit GitHub has not received. Press q if a pager opens.",
   },
   {
-    id: "local", section: "Share your work", title: "Saved here. Not shared yet.",
-    subtitle: "A commit stays on your computer until you push.", visual: "local",
-    notes: "Ask participants to predict whether their profile has changed yet. Compare the local history with the GitHub history: the new commit is only local. Repeat the distinction: save updates a file, commit records a version, push sends commits to GitHub. A clean working tree does not prove that the remote is up to date.",
+    id: "local", section: "Work together", title: "Does committing update GitHub?",
+    subtitle: "A local commit reaches GitHub when you push it.", visual: "local",
+    scenario: "Jordan opens GitHub and still sees Room 101. Your commit is only on your computer.",
+    notes: "Jordan needs the presentation details but still sees Room 101 on GitHub. Compare the histories: Gael's local copy has Start class project plus Update presentation location; GitHub has only Start class project. An editor save updates a file, a commit records a local version, and a push shares commits. A clean working tree does not mean GitHub is current. Ask how Gael can share the new location with Jordan and Maya.",
   },
   {
-    id: "push", section: "Share your work", title: "Send your commit to GitHub.",
-    subtitle: "git push", visual: "push", practice: "publish",
-    notes: "Because we cloned this repository and kept its original branch, git push normally uses its configured upstream. Complete the browser sign-in if prompted, using the same GitHub account that owns the repository. GitHub account passwords are not used directly as HTTPS Git passwords. Troubleshoot authentication rather than force pushing. If the remote has additional changes, stop and ask the facilitator to inspect them; do not discard work. Make time for this first authenticated push.",
+    id: "push", section: "Work together", title: "Share commits with git push",
+    subtitle: "git push", visual: "push",
+    scenario: "Jordan needs the new location. Your update is only on your computer.",
+    goal: "Send your commit to the shared repository on GitHub.",
+    result: "GitHub has your commit and shows Room 202 in the notes.",
+    notes: "git push sends commits to the configured upstream. This cloned branch already has one, so use git push. Show GitHub now containing Update presentation location and Room 202. Jordan and Maya can see the new details on GitHub and pull the commit into their own copies. Authentication and write permission are required; the later profile exercise uses the participant's own repository. Push shares commits, not unsaved or uncommitted edits.",
   },
   {
-    id: "published", section: "Share your work", title: "Your profile, updated.",
-    subtitle: "Refresh GitHub. Find the commit. Visit your profile.", visual: "published",
-    notes: "Check the repository README and commit history first, then open the participant's profile. The profile displays the nonempty README from their public username-matching repository. The website's Mark complete is only their own checklist, not automatic verification. If the README appears in the repository but not the profile, check its name, visibility, root filename and content. Congratulate the group on the concrete result without spending the remaining session on decoration.",
+    id: "pull", section: "Work together", title: "Get teammate updates with git pull",
+    subtitle: "git pull", visual: "pull",
+    scenario: "Maya commits and pushes an adapter reminder to checklist.md.",
+    goal: "Bring her new commit into your local copy.",
+    result: "Your checklist includes the adapter reminder; the location stays Room 202.",
+    notes: "After your location update is shared, Maya brings that commit into her copy, adds Bring the presentation adapter to checklist.md, commits and pushes. Your working tree is clean and you have no newer local commits, so this prepared story can fast-forward. git pull fetches shared commits and integrates them into the current branch. It brings Maya's saved checklist update into your local copy while preserving the location change. Pull is not the same as a GitHub pull request. Divergent histories and conflicts need additional care; keep those out of this introductory example.",
   },
   {
-    id: "repeat", section: "Make it stick", title: "One more change. Your turn.",
-    subtitle: "Add a learning goal, then publish it.", visual: "repeat", practice: "repeat",
-    notes: "Give five minutes to add one learning goal or interest and repeat edit, status/diff, add, commit, push. Keep the guide available but avoid dictating each command immediately. Ask what each action does and where the change exists after it. Fast finishers can inspect their two commits and explain the distinction between file save, commit and push to a neighbor. Do not add branches or conflict exercises into the buffer.",
+    id: "branch", section: "Work together", title: "What is a branch?",
+    subtitle: "A separate line of saved work.", visual: "branch",
+    scenario: "Jordan wants to try a different presentation outline while keeping the current version.",
+    notes: "Jordan maintains outline.md and wants to try an alternative presentation outline. A branch names a line of saved work, giving the group a way to develop an idea before combining it with the main version. It is not a separate physical folder, and creating or switching branches does not automatically save uncommitted edits. This is a brief concept preview. Branch commands, merging, pull requests, and conflicts are follow-up topics.",
   },
   {
-    id: "recap", section: "Make it stick", title: "You can do this again.",
-    subtitle: "Edit. Inspect. Stage. Commit. Push.", visual: "recap",
-    notes: "End the planned teaching by minute 50. Ask: what records the version, what uploads it, and how do you check a change before saving it? Point to the guide and reference for later practice. Branches, pull requests and collaboration are good next steps, not extra requirements today. Keep the final ten minutes for questions and catch-up. The proposed timing still needs a beginner rehearsal and real GitHub/account checks on the workshop devices.",
+    id: "recap", section: "The workflow", title: "Review the Git workflow",
+    subtitle: "Copy the project. Inspect changes. Record versions. Share updates.", visual: "recap",
+    notes: "Close the teaching story. Clone gets a project once. Status and diff inspect changes. Add selects contents. Commit records a version. Log reads history. Push shares your commits; pull brings in teammates' commits. Ask when you would use push versus pull, and which action actually creates a saved version. Keep explanations to about 25 minutes including the transition. Next, apply this workflow to a new, personal project.",
+  },
+  {
+    id: "apply", section: "Your turn", title: "Practice: Create your GitHub profile README",
+    subtitle: "Use the Git workflow in your own repository.", visual: "apply", practice: "create",
+    notes: "This is the first activity handoff. The independent teaching portion is complete. Switch to Practice now and allow about 25 minutes for the seven-checkpoint README activity. The class project repository was an example; participants create or open their own GitHub profile repository. They reuse clone, status, diff, add, commit, log, and push. There is no teammate update in this solo exercise, so pull is not a required checkbox.",
+  },
+  {
+    id: "profile", section: "Your turn", title: "What is a GitHub profile README?",
+    subtitle: "A public README that appears on your profile.", visual: "profile", practice: "create",
+    notes: "A profile README uses a public repository whose name matches the participant's GitHub username, with a nonempty README.md in its root. Create it on GitHub with Add README enabled, or preserve and update an existing profile repository. Include only information the participant wants public. Practice contains the detailed instructions, nano save/exit steps, command reference, and help. GitHub managed user accounts can use an ordinary repository for the Git exercise instead.",
+  },
+  {
+    id: "repeat", section: "Your turn", title: "Practice the workflow again",
+    subtitle: "Add a learning goal, then commit and push your change.", visual: "repeat", practice: "repeat",
+    notes: "After the first successful profile push, ask learners to add one learning goal and repeat the workflow with less guidance. Check local history and the published profile. Ask what editor save, commit, and push each do; ask why pull was useful in the team story. Close the planned work by minute 50 and protect the final ten minutes for questions and catch-up. Do not fill the buffer with new mandatory topics.",
   },
 ];
-
 export const starterReadme = `# Hi, I'm Alex
 
 I'm interested in engineering and how technology can help people.
@@ -136,7 +201,7 @@ I'm interested in engineering and how technology can help people.
 
 export const checkpoints: Checkpoint[] = [
   {
-    id: "create", title: "Create your profile repository.", shortTitle: "Create your repo", summary: "Make the GitHub home for your introduction.", duration: "3 min", slide: "profile",
+    id: "create", title: "Create your profile repository.", shortTitle: "Create your repo", summary: "Apply the workflow from the lesson to a project of your own.", duration: "~2 min", slide: "profile",
     blocks: [
       { title: "Open a new repository.", text: "Sign in to GitHub, open New repository, and choose your own account as the owner.", link: { label: "New repository on GitHub", href: "https://github.com/new" } },
       { title: "Use your exact GitHub username.", text: "For example, if your username is alex-rivera, name the repository alex-rivera. Choose Public and turn on Add README. Then create the repository.", expected: "A public repository at github.com/YOUR-USERNAME/YOUR-USERNAME, with a README.md file." },
@@ -149,7 +214,7 @@ export const checkpoints: Checkpoint[] = [
     ],
   },
   {
-    id: "clone", title: "Bring the repository to your computer.", shortTitle: "Clone your repo", summary: "Clone once, then work inside the new folder.", duration: "4 min", slide: "clone",
+    id: "clone", title: "Bring the repository to your computer.", shortTitle: "Clone your repo", summary: "Clone once, then work inside the new folder.", duration: "~3 min", slide: "clone",
     blocks: [
       { title: "Copy your HTTPS repository URL.", text: "On your repository, choose Code, select HTTPS, and copy the URL. Open Git Bash on Windows or Terminal on macOS/Linux in the parent folder where you want the project." },
       { title: "Clone your own repository.", text: "Replace both YOUR-USERNAME placeholders, or paste the HTTPS URL you just copied after git clone. Do not copy a $ prompt.", command: "git clone https://github.com/YOUR-USERNAME/YOUR-USERNAME.git", expected: "Git creates a folder with your username and downloads README.md plus its Git history." },
@@ -164,7 +229,7 @@ export const checkpoints: Checkpoint[] = [
     ],
   },
   {
-    id: "edit", title: "Write your introduction.", shortTitle: "Edit the README", summary: "Use a few lines of Markdown. Keep it personal and simple.", duration: "7 min", slide: "edit",
+    id: "edit", title: "Write your introduction.", shortTitle: "Edit the README", summary: "Use a few lines of Markdown. Keep it personal and simple.", duration: "~4 min", slide: "edit",
     blocks: [
       { title: "Read the starting file.", command: "cat README.md", expected: "The existing README text prints in your terminal." },
       { title: "Open the file in nano.", text: "Use the starter below as inspiration. Replace Alex with your name or nickname and write one sentence about your interests. If you already have a profile, add a short learning goal to it.", command: "nano README.md" },
@@ -179,7 +244,7 @@ export const checkpoints: Checkpoint[] = [
     ],
   },
   {
-    id: "inspect", title: "Look before you commit.", shortTitle: "Inspect the change", summary: "Find the changed file, then read its changed lines.", duration: "5 min", slide: "diff",
+    id: "inspect", title: "Look before you commit.", shortTitle: "Inspect the change", summary: "Find the changed file, then read its changed lines.", duration: "~3 min", slide: "diff",
     blocks: [
       { title: "Check the repository status.", command: "git status", expected: "README.md is listed as modified under changes not staged for commit." },
       { title: "Read the difference.", command: "git diff", expected: "Lines beginning with - were removed. Lines beginning with + were added. Your new introduction appears here." },
@@ -192,7 +257,7 @@ export const checkpoints: Checkpoint[] = [
     ],
   },
   {
-    id: "commit", title: "Save a version with Git.", shortTitle: "Stage & commit", summary: "Select the README contents, then record a named snapshot.", duration: "9 min", slide: "commit",
+    id: "commit", title: "Save a version with Git.", shortTitle: "Stage & commit", summary: "Select the README contents, then record a named snapshot.", duration: "~4 min", slide: "commit",
     blocks: [
       { title: "Stage the README.", command: "git add README.md", expected: "Usually there is no output. The current README contents are selected for your next commit; the file stays in its folder." },
       { title: "Check what is selected.", command: "git status", expected: "README.md is under changes to be committed. If you edit it again, run git add README.md again to select the newer contents." },
@@ -207,7 +272,7 @@ export const checkpoints: Checkpoint[] = [
     ],
   },
   {
-    id: "publish", title: "Publish your introduction.", shortTitle: "Push & view profile", summary: "Send the commit to GitHub and see the result on your profile.", duration: "7 min", slide: "push",
+    id: "publish", title: "Publish your introduction.", shortTitle: "Push & view profile", summary: "Send the commit to GitHub and see the result on your profile.", duration: "~4 min", slide: "push",
     blocks: [
       { title: "Push your local commit.", text: "The clone already has an upstream configured. If a browser sign-in opens, use the GitHub account that owns this repository and complete the prompt.", command: "git push", expected: "The push finishes without an error. GitHub now has the commit from your computer." },
       { title: "Check the repository on GitHub.", text: "Refresh your repository page. Find your introduction in README.md and your message in the commit history.", expected: "The text and commit message match what you saved locally." },
@@ -221,7 +286,7 @@ export const checkpoints: Checkpoint[] = [
     ],
   },
   {
-    id: "repeat", title: "Make one more change.", shortTitle: "Try it again", summary: "Add a learning goal and repeat the workflow with fewer prompts.", duration: "5 min", slide: "repeat",
+    id: "repeat", title: "Make one more change.", shortTitle: "Try it again", summary: "Add a learning goal and repeat the workflow with fewer prompts.", duration: "~3 min", slide: "repeat",
     blocks: [
       { title: "Add one small detail.", text: "Open README.md again and add a learning goal or interest. Save and exit your editor. Keep existing text you want to preserve.", command: "nano README.md" },
       { title: "Inspect, select, record, share.", text: "Try the sequence yourself. Check your change, stage README.md, commit with a message such as Add a learning goal, then push. The reference is here if you need a reminder." },
@@ -249,6 +314,7 @@ export const reference: Array<{ command: string; meaning: string }> = [
   { command: 'git commit -m "Describe the change"', meaning: "Record a local project snapshot with a message." },
   { command: "git log --oneline", meaning: "Read the saved history. Press q if a pager opens." },
   { command: "git push", meaning: "Send local commits to this branch's configured upstream on GitHub." },
+  { command: "git pull", meaning: "Bring shared commits into your current branch. In the lesson, this gets Maya's checklist update." },
 ];
 
 export const setupChecklist: string[] = [
@@ -268,7 +334,7 @@ const identityBlocks: GuideBlock[] = [
   },
   {
     title: "Choose your commit email.",
-    text: "Replace the example address. For privacy, copy your exact GitHub noreply address from GitHub Settings → Emails. It may include a numeric ID; do not invent an address from your username.",
+    text: "Replace the example address. For privacy, copy your exact GitHub noreply address from GitHub Settings > Emails. It may include a numeric ID; do not invent an address from your username.",
     command: 'git config --global user.email "YOUR-GITHUB-NOREPLY-EMAIL"',
     link: { label: "Find your GitHub email settings", href: "https://github.com/settings/emails" },
   },
